@@ -42,6 +42,49 @@
                             <p class="lead">{{ data.description }}</p>
                         {% endif %}
                         
+                        {% if data.company_history %}
+                            <div class="mt-4">
+                                <h4>Company History</h4>
+                                
+                                {% if data.company_history.founding_year %}
+                                <div class="mb-3">
+                                    <h5><i data-feather="calendar" class="me-2"></i> Founded</h5>
+                                    <p>{{ data.company_history.founding_context }}</p>
+                                    <div class="badge bg-primary">Founded in {{ data.company_history.founding_year }}</div>
+                                </div>
+                                {% endif %}
+                                
+                                {% if data.company_history.founders %}
+                                <div class="mb-3">
+                                    <h5><i data-feather="users" class="me-2"></i> Founders</h5>
+                                    <p>{{ data.company_history.founder_context }}</p>
+                                </div>
+                                {% endif %}
+                                
+                                {% if data.company_history.employee_count %}
+                                <div class="mb-3">
+                                    <h5><i data-feather="user-plus" class="me-2"></i> Team Size</h5>
+                                    <p>{{ data.company_history.employee_context }}</p>
+                                    <div class="badge bg-info">{{ data.company_history.employee_count }} employees</div>
+                                </div>
+                                {% endif %}
+                                
+                                {% if data.company_history.financial_info %}
+                                <div class="mb-3">
+                                    <h5><i data-feather="dollar-sign" class="me-2"></i> Financial Information</h5>
+                                    <p>{{ data.company_history.financial_info }}</p>
+                                </div>
+                                {% endif %}
+                                
+                                {% if data.company_history.acquisition_info %}
+                                <div class="mb-3">
+                                    <h5><i data-feather="git-merge" class="me-2"></i> Acquisition Information</h5>
+                                    <p>{{ data.company_history.acquisition_info }}</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                        
                         {% if data.keywords %}
                             <div class="mt-3">
                                 <h5>Keywords</h5>

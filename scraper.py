@@ -164,6 +164,96 @@ def extract_services_products(text, company_name):
     
     return services, products
 
+def extract_company_history(text, company_name):
+    """Extract company history, founding date, and other significant information"""
+    history_info = {}
+    
+    # Split text into paragraphs for analysis
+    paragraphs = re.split(r'\n+', text)
+    
+    # Look for founding date patterns
+    founding_date_patterns = [
+        # Year only: "founded in 2010" or "established in 2010"
+        r'(?:founded|established|started|launched|created|began|incorporated)(?:\s+\w+){0,3}\s+in\s+(\d{4})',
+        # Month and year: "founded in January 2010"
+        r'(?:founded|established|started|launched|created|began|incorporated)(?:\s+\w+){0,3}\s+in\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{4})',
+        # Simple year search when company name is directly associated
+        r'(?:' + re.escape(company_name) + r')\s+(?:was|were)?\s+(?:founded|established|started|launched|created|began|incorporated)(?:\s+\w+){0,3}\s+in\s+(\d{4})',
+        # Simple founding statement
+        r'(?:since|established|founded)\s+in\s+(\d{4})',
+    ]
+    
+    for pattern in founding_date_patterns:
+        for para in paragraphs:
+            matches = re.search(pattern, para, re.I)
+            if matches:
+                founding_year = matches.group(1)
+                history_info['founding_year'] = founding_year
+                history_info['founding_context'] = clean_text(para)
+                break
+        if 'founding_year' in history_info:
+            break
+    
+    # Look for revenue/funding information
+    financial_patterns = [
+        # Revenue patterns
+        r'(?:revenue|sales|turnover)(?:\s+\w+){0,3}\s+(?:of|reached|exceeded|approximately|about|around|nearly|over)?\s+(?:\$|€|£|¥)?(\d+(?:\.\d+)?)\s+(?:million|billion|trillion|m|b|t)',
+        # Funding patterns
+        r'(?:funding|raised|investment|capital|series\s+[a-z])(?:\s+\w+){0,3}\s+(?:of|totaling|totalling|reaching|approximately|about|around|nearly|over)?\s+(?:\$|€|£|¥)?(\d+(?:\.\d+)?)\s+(?:million|billion|trillion|m|b|t)',
+        # Valuation patterns
+        r'(?:valued|valuation|worth|market\s+cap)(?:\s+\w+){0,3}\s+(?:of|at|approximately|about|around|nearly|over)?\s+(?:\$|€|£|¥)?(\d+(?:\.\d+)?)\s+(?:million|billion|trillion|m|b|t)',
+    ]
+    
+    for pattern in financial_patterns:
+        for para in paragraphs:
+            matches = re.search(pattern, para, re.I)
+            if matches and 'financial_info' not in history_info:
+                history_info['financial_info'] = clean_text(para)
+                break
+    
+    # Look for employee count
+    employee_patterns = [
+        r'(?:employs|employees|team|staff|workforce)(?:\s+\w+){0,3}\s+(?:of|approximately|about|around|nearly|over|more\s+than)?\s+(\d{1,3}(?:,\d{3})*)\s+(?:people|employees|members|professionals|individuals|staff)',
+        r'(?:employs|employees|team|staff|workforce|headcount)(?:\s+\w+){0,3}\s+(?:of|approximately|about|around|nearly|over|more\s+than)?\s+(\d{1,3}(?:,\d{3})*)',
+    ]
+    
+    for pattern in employee_patterns:
+        for para in paragraphs:
+            matches = re.search(pattern, para, re.I)
+            if matches and 'employee_count' not in history_info:
+                history_info['employee_count'] = matches.group(1)
+                history_info['employee_context'] = clean_text(para)
+                break
+    
+    # Look for founders information
+    founder_patterns = [
+        r'(?:founded|established|started|created|began)(?:\s+by\s+)((?:[A-Z][a-z]+ [A-Z][a-z]+)(?:,? (?:and )?))+',
+        r'(?:founder|co-founder|creator)(?:s)?\s+(?:is|are|was|were)\s+((?:[A-Z][a-z]+ [A-Z][a-z]+)(?:,? (?:and )?))+',
+    ]
+    
+    for pattern in founder_patterns:
+        for para in paragraphs:
+            matches = re.search(pattern, para, re.I)
+            if matches and 'founders' not in history_info:
+                history_info['founders'] = matches.group(1).strip()
+                history_info['founder_context'] = clean_text(para)
+                break
+    
+    # Look for acquisition information
+    acquisition_patterns = [
+        r'(?:acquired|purchased|bought|taken\s+over)(?:\s+by\s+)((?:[A-Z][a-z]+ )+)(?:\s+\w+){0,5}\s+in\s+(\d{4})',
+        r'(?:acquisition|purchase|takeover|merger)(?:\s+\w+){0,3}\s+by\s+((?:[A-Z][a-z]+ )+)',
+    ]
+    
+    for pattern in acquisition_patterns:
+        for para in paragraphs:
+            matches = re.search(pattern, para, re.I)
+            if matches and 'acquisition_info' not in history_info:
+                history_info['acquisition_info'] = clean_text(para)
+                break
+    
+    return history_info
+
 def scrape_website(url):
     """Scrape website and extract business information"""
     logger.info(f"Starting scrape of URL: {url}")
@@ -213,7 +303,9 @@ def scrape_website(url):
         
         # Extract contact information from both visible text and metadata
         meta_description = soup.find('meta', attrs={'name': 'description'})
-        meta_text = meta_description['content'] if meta_description else ""
+        meta_text = ""
+        if meta_description and meta_description.has_attr('content'):
+            meta_text = meta_description['content']
         
         full_text = f"{clean_content} {meta_text} {str(soup)}"
         
@@ -225,12 +317,22 @@ def scrape_website(url):
         # Add any contact info from HTML parser
         parsed_contacts = parser.contact_info
         for contact in parsed_contacts:
-            if re.search(EMAIL_PATTERN, contact):
-                emails.append(re.search(EMAIL_PATTERN, contact).group(0))
-            elif re.search(PHONE_PATTERN, contact):
-                phones.append(re.search(PHONE_PATTERN, contact).group(0))
-            elif re.search(ADDRESS_PATTERN, contact, re.IGNORECASE):
-                addresses.append(re.search(ADDRESS_PATTERN, contact, re.IGNORECASE).group(0))
+            # Check for email pattern
+            email_match = re.search(EMAIL_PATTERN, contact)
+            if email_match:
+                emails.append(email_match.group(0))
+                continue
+                
+            # Check for phone pattern
+            phone_match = re.search(PHONE_PATTERN, contact)
+            if phone_match:
+                phones.append(phone_match.group(0))
+                continue
+                
+            # Check for address pattern
+            addr_match = re.search(ADDRESS_PATTERN, contact, re.IGNORECASE)
+            if addr_match:
+                addresses.append(addr_match.group(0))
         
         # Remove duplicates
         emails = list(set(emails))
@@ -255,8 +357,10 @@ def scrape_website(url):
         # Get meta keywords
         meta_keywords = soup.find('meta', attrs={'name': 'keywords'})
         keywords = []
-        if meta_keywords and meta_keywords.get('content'):
-            keywords = [k.strip() for k in meta_keywords['content'].split(',')]
+        if meta_keywords and meta_keywords.has_attr('content'):
+            content = meta_keywords['content']
+            if content and isinstance(content, str):
+                keywords = [k.strip() for k in content.split(',')]
         
         # Get business description
         description = ""
@@ -267,8 +371,11 @@ def scrape_website(url):
         if about_section:
             description = clean_text(about_section.get_text())
         
-        if not description and meta_description:
+        if not description and meta_description and meta_description.has_attr('content'):
             description = meta_description['content']
+        
+        # Extract company history information
+        company_history = extract_company_history(clean_content, company_name)
         
         # Combine everything into a result dictionary
         result = {
@@ -283,6 +390,7 @@ def scrape_website(url):
             'services': services,
             'products': products,
             'keywords': keywords,
+            'company_history': company_history,
             'url': url,
             'domain': domain_name
         }
