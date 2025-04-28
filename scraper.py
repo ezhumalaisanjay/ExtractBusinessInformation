@@ -65,7 +65,7 @@ ADDRESS_PATTERN = r'\d+\s+(?:[A-Za-z0-9.-]+\s+){1,5}(?:Street|St|Avenue|Ave|Road
 SOCIAL_MEDIA_PATTERNS = {
     'facebook': r'facebook\.com/[\w.-]+',
     'twitter': r'twitter\.com/[\w.-]+',
-    'linkedin': r'linkedin\.com/(?:company|in)/[\w.-]+',
+    'linkedin': r'linkedin\.com/(?:company|in|school)/[\w.-]+',
     'instagram': r'instagram\.com/[\w.-]+',
 }
 
@@ -181,6 +181,10 @@ def extract_company_history(text, company_name):
         r'(?:' + re.escape(company_name) + r')\s+(?:was|were)?\s+(?:founded|established|started|launched|created|began|incorporated)(?:\s+\w+){0,3}\s+in\s+(\d{4})',
         # Simple founding statement
         r'(?:since|established|founded)\s+in\s+(\d{4})',
+        # Founded by person in year
+        r'(?:founded|established|started|created|began)\s+by\s+(?:[A-Z][a-z]+\s+)+in\s+(\d{4})',
+        # Year directly with founding word
+        r'(?:founded|established|started|created|began|incorporated):\s*(\d{4})',
     ]
     
     for pattern in founding_date_patterns:
@@ -197,11 +201,13 @@ def extract_company_history(text, company_name):
     # Look for revenue/funding information
     financial_patterns = [
         # Revenue patterns
-        r'(?:revenue|sales|turnover)(?:\s+\w+){0,3}\s+(?:of|reached|exceeded|approximately|about|around|nearly|over)?\s+(?:\$|€|£|¥)?(\d+(?:\.\d+)?)\s+(?:million|billion|trillion|m|b|t)',
+        r'(?:revenue|sales|turnover|annual\s+revenue)(?:\s+\w+){0,3}\s+(?:of|is|was|reached|exceeded|approximately|about|around|nearly|over)?\s+(?:\$|€|£|¥)?(\d+(?:[\.,]\d+)?)\s*(?:million|billion|trillion|m|b|t|M|B|T)',
         # Funding patterns
-        r'(?:funding|raised|investment|capital|series\s+[a-z])(?:\s+\w+){0,3}\s+(?:of|totaling|totalling|reaching|approximately|about|around|nearly|over)?\s+(?:\$|€|£|¥)?(\d+(?:\.\d+)?)\s+(?:million|billion|trillion|m|b|t)',
+        r'(?:funding|raised|investment|capital|series\s+[a-z])(?:\s+\w+){0,3}\s+(?:of|totaling|totalling|reaching|approximately|about|around|nearly|over)?\s+(?:\$|€|£|¥)?(\d+(?:[\.,]\d+)?)\s*(?:million|billion|trillion|m|b|t|M|B|T)',
         # Valuation patterns
-        r'(?:valued|valuation|worth|market\s+cap)(?:\s+\w+){0,3}\s+(?:of|at|approximately|about|around|nearly|over)?\s+(?:\$|€|£|¥)?(\d+(?:\.\d+)?)\s+(?:million|billion|trillion|m|b|t)',
+        r'(?:valued|valuation|worth|market\s+cap)(?:\s+\w+){0,3}\s+(?:of|at|approximately|about|around|nearly|over)?\s+(?:\$|€|£|¥)?(\d+(?:[\.,]\d+)?)\s*(?:million|billion|trillion|m|b|t|M|B|T)',
+        # Direct currency amounts
+        r'(?:\$|€|£|¥)(\d+(?:[\.,]\d+)?)\s*(?:million|billion|trillion|m|b|t|M|B|T)',
     ]
     
     for pattern in financial_patterns:
@@ -215,6 +221,8 @@ def extract_company_history(text, company_name):
     employee_patterns = [
         r'(?:employs|employees|team|staff|workforce)(?:\s+\w+){0,3}\s+(?:of|approximately|about|around|nearly|over|more\s+than)?\s+(\d{1,3}(?:,\d{3})*)\s+(?:people|employees|members|professionals|individuals|staff)',
         r'(?:employs|employees|team|staff|workforce|headcount)(?:\s+\w+){0,3}\s+(?:of|approximately|about|around|nearly|over|more\s+than)?\s+(\d{1,3}(?:,\d{3})*)',
+        r'(?:company\s+size|size|headcount)(?:\s*:)?\s*(\d{1,3}(?:,\d{3})*\s*-\s*\d{1,3}(?:,\d{3})*)',
+        r'(?:company\s+size|size|headcount)(?:\s*:)?\s*(\d{1,3}(?:,\d{3})*\+?)',
     ]
     
     for pattern in employee_patterns:
@@ -229,6 +237,7 @@ def extract_company_history(text, company_name):
     founder_patterns = [
         r'(?:founded|established|started|created|began)(?:\s+by\s+)((?:[A-Z][a-z]+ [A-Z][a-z]+)(?:,? (?:and )?))+',
         r'(?:founder|co-founder|creator)(?:s)?\s+(?:is|are|was|were)\s+((?:[A-Z][a-z]+ [A-Z][a-z]+)(?:,? (?:and )?))+',
+        r'(?:founder|co-founder|creator)(?:s)?\s*(?::|-)?\s*((?:[A-Z][a-z]+ [A-Z][a-z]+)(?:,? (?:and )?))+',
     ]
     
     for pattern in founder_patterns:
@@ -243,6 +252,7 @@ def extract_company_history(text, company_name):
     acquisition_patterns = [
         r'(?:acquired|purchased|bought|taken\s+over)(?:\s+by\s+)((?:[A-Z][a-z]+ )+)(?:\s+\w+){0,5}\s+in\s+(\d{4})',
         r'(?:acquisition|purchase|takeover|merger)(?:\s+\w+){0,3}\s+by\s+((?:[A-Z][a-z]+ )+)',
+        r'(?:acquired|purchased|bought|takeover|acquisition)\s+(?:of|by)\s+((?:[A-Z][a-z]+ )+)',
     ]
     
     for pattern in acquisition_patterns:
@@ -252,7 +262,114 @@ def extract_company_history(text, company_name):
                 history_info['acquisition_info'] = clean_text(para)
                 break
     
+    # Look for industry/sector information
+    industry_patterns = [
+        r'(?:industry|sector)(?:\s*:)?\s*([A-Za-z, &]+)',
+        r'(?:specializes|specializes\s+in|focuses\s+on)(?:\s+the)?\s+([A-Za-z, &]+)\s+(?:industry|sector)',
+        r'(?:leading|top)(?:\s+the)?\s+([A-Za-z, &]+)\s+(?:industry|sector|market)',
+    ]
+    
+    for pattern in industry_patterns:
+        for para in paragraphs:
+            matches = re.search(pattern, para, re.I)
+            if matches and 'industry' not in history_info:
+                industry = matches.group(1).strip()
+                if 5 < len(industry) < 100:  # Reasonable length for industry name
+                    history_info['industry'] = industry
+                    break
+    
+    # Look for timeline and milestones
+    milestone_patterns = [
+        r'(?:timeline|milestones|history)(?:\s*:)?\s*([^\.]+\d{4}[^\.]+)',
+        r'(?:in\s+)(\d{4})(?:,?\s+)([^\.]+)',
+    ]
+    
+    milestones = []
+    for pattern in milestone_patterns:
+        for para in paragraphs:
+            matches = re.findall(pattern, para, re.I)
+            if matches:
+                for match in matches:
+                    if isinstance(match, tuple):
+                        milestone = f"{match[0]}: {match[1]}"
+                    else:
+                        milestone = match
+                    milestones.append(clean_text(milestone))
+    
+    if milestones:
+        history_info['milestones'] = milestones[:5]  # Limit to top 5 milestones
+    
     return history_info
+
+def extract_linkedin_company_info(soup, url, text):
+    """Extract company information specifically from LinkedIn company pages"""
+    linkedin_info = {}
+    
+    # Check if this is a LinkedIn page
+    if 'linkedin.com/company/' not in url and 'linkedin.com/school/' not in url:
+        return {}
+    
+    # Extract the company name from LinkedIn
+    li_company_name_elem = soup.find('h1', class_=lambda c: c and 'org-top-card-summary__title' in c)
+    if li_company_name_elem:
+        linkedin_info['company_name'] = li_company_name_elem.text.strip()
+    
+    # Extract follower count
+    follower_elem = soup.find('div', class_=lambda c: c and 'org-top-card-summary__follower-count' in c)
+    if follower_elem:
+        follower_text = follower_elem.text.strip()
+        follower_match = re.search(r'([\d,]+)', follower_text)
+        if follower_match:
+            linkedin_info['follower_count'] = follower_match.group(1)
+    
+    # Extract company overview/description
+    about_section = soup.find('section', class_=lambda c: c and 'artdeco-card' in c and 'about-us' in c)
+    if about_section:
+        linkedin_info['overview'] = about_section.text.strip()
+    
+    # Extract company size
+    size_pattern = r'(?:company\s+size|size)(?:\s*:)?\s*(\d{1,3}(?:,\d{3})*(?:\s*-\s*\d{1,3}(?:,\d{3})*|\+))'
+    size_match = re.search(size_pattern, text, re.I)
+    if size_match:
+        linkedin_info['company_size'] = size_match.group(1)
+    
+    # Extract founded date
+    founded_pattern = r'(?:founded|established)(?:\s*:)?\s*(\d{4})'
+    founded_match = re.search(founded_pattern, text, re.I)
+    if founded_match:
+        linkedin_info['founded'] = founded_match.group(1)
+    
+    # Extract industry
+    industry_pattern = r'(?:industry|sector)(?:\s*:)?\s*([A-Za-z, &]+)'
+    industry_match = re.search(industry_pattern, text, re.I)
+    if industry_match:
+        linkedin_info['industry'] = industry_match.group(1).strip()
+    
+    # Extract headquarters location
+    hq_pattern = r'(?:headquarters|location)(?:\s*:)?\s*([A-Za-z, ]+)'
+    hq_match = re.search(hq_pattern, text, re.I)
+    if hq_match:
+        linkedin_info['headquarters'] = hq_match.group(1).strip()
+    
+    # Extract specialties
+    specialties_section = re.search(r'specialties(?:\s*:)?\s*([^\.]+)', text, re.I)
+    if specialties_section:
+        specialties_text = specialties_section.group(1)
+        specialties = [s.strip() for s in specialties_text.split(',')]
+        linkedin_info['specialties'] = specialties
+    
+    # Extract funding information
+    funding_pattern = r'(?:funding|raised|investment|capital|series\s+[a-z])(?:\s+\w+){0,3}\s+(?:of|totaling|totalling|reaching|approximately|about|around|nearly|over)?\s+(?:\$|€|£|¥)?(\d+(?:[\.,]\d+)?)\s*(?:million|billion|trillion|m|b|t|M|B|T)'
+    funding_match = re.search(funding_pattern, text, re.I)
+    if funding_match:
+        linkedin_info['funding'] = funding_match.group(0)
+    
+    # Extract website from LinkedIn page
+    website_elem = soup.find('a', class_=lambda c: c and 'org-about-us-company-module__website' in c)
+    if website_elem:
+        linkedin_info['website'] = website_elem.get('href')
+    
+    return linkedin_info
 
 def scrape_website(url):
     """Scrape website and extract business information"""
@@ -377,6 +494,42 @@ def scrape_website(url):
         # Extract company history information
         company_history = extract_company_history(clean_content, company_name)
         
+        # Check if this is a LinkedIn page and extract specialized info
+        linkedin_info = extract_linkedin_company_info(soup, url, clean_content)
+        
+        # If LinkedIn data is available, enhance our company history data
+        if linkedin_info:
+            # Use LinkedIn company name if available
+            if 'company_name' in linkedin_info and linkedin_info['company_name']:
+                company_name = linkedin_info['company_name']
+            
+            # Add founding year if available from LinkedIn but not from general extraction
+            if 'founded' in linkedin_info and 'founding_year' not in company_history:
+                company_history['founding_year'] = linkedin_info['founded']
+                company_history['founding_context'] = f"Founded in {linkedin_info['founded']}"
+            
+            # Add company size if available
+            if 'company_size' in linkedin_info and 'employee_count' not in company_history:
+                company_history['employee_count'] = linkedin_info['company_size']
+                company_history['employee_context'] = f"Company size: {linkedin_info['company_size']}"
+            
+            # Add industry if available
+            if 'industry' in linkedin_info and 'industry' not in company_history:
+                company_history['industry'] = linkedin_info['industry']
+            
+            # Add LinkedIn-specific information to the result
+            if 'specialties' in linkedin_info:
+                company_history['specialties'] = linkedin_info['specialties']
+            
+            if 'headquarters' in linkedin_info:
+                company_history['headquarters'] = linkedin_info['headquarters']
+            
+            if 'follower_count' in linkedin_info:
+                company_history['linkedin_followers'] = linkedin_info['follower_count']
+            
+            if 'funding' in linkedin_info and 'financial_info' not in company_history:
+                company_history['financial_info'] = linkedin_info['funding']
+        
         # Combine everything into a result dictionary
         result = {
             'company_name': company_name,
@@ -394,6 +547,10 @@ def scrape_website(url):
             'url': url,
             'domain': domain_name
         }
+        
+        # Add LinkedIn-specific full data section if available
+        if linkedin_info:
+            result['linkedin_data'] = linkedin_info
         
         logger.info(f"Successfully scraped {url}")
         return result

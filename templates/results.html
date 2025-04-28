@@ -82,6 +82,50 @@
                                     <p>{{ data.company_history.acquisition_info }}</p>
                                 </div>
                                 {% endif %}
+                                
+                                {% if data.company_history.industry %}
+                                <div class="mb-3">
+                                    <h5><i data-feather="briefcase" class="me-2"></i> Industry</h5>
+                                    <p>{{ data.company_history.industry }}</p>
+                                    <div class="badge bg-secondary">{{ data.company_history.industry }}</div>
+                                </div>
+                                {% endif %}
+                                
+                                {% if data.company_history.headquarters %}
+                                <div class="mb-3">
+                                    <h5><i data-feather="map-pin" class="me-2"></i> Headquarters</h5>
+                                    <p>{{ data.company_history.headquarters }}</p>
+                                </div>
+                                {% endif %}
+                                
+                                {% if data.company_history.linkedin_followers %}
+                                <div class="mb-3">
+                                    <h5><i data-feather="users" class="me-2"></i> LinkedIn Followers</h5>
+                                    <p>{{ data.company_history.linkedin_followers }} followers</p>
+                                </div>
+                                {% endif %}
+                                
+                                {% if data.company_history.specialties %}
+                                <div class="mb-3">
+                                    <h5><i data-feather="award" class="me-2"></i> Specialties</h5>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        {% for specialty in data.company_history.specialties %}
+                                            <span class="badge bg-info">{{ specialty }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                {% if data.company_history.milestones %}
+                                <div class="mb-3">
+                                    <h5><i data-feather="clock" class="me-2"></i> Timeline & Milestones</h5>
+                                    <ul class="list-group list-group-flush">
+                                        {% for milestone in data.company_history.milestones %}
+                                            <li class="list-group-item">{{ milestone }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                {% endif %}
                             </div>
                         {% endif %}
                         
