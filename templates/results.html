@@ -345,7 +345,18 @@
                             <!-- POSTS TAB -->
                             <div class="tab-pane fade" id="posts-tab-pane" role="tabpanel" aria-labelledby="posts-tab" tabindex="0">
                                 {% if data.linkedin_data.posts and data.linkedin_data.posts.authentication_required %}
-                                    <!-- Authentication Required Message -->
+                                    {% if data.linkedin_data.posts.count and data.linkedin_data.posts.count != "0" and data.linkedin_data.posts.count != 0 and data.linkedin_data.posts.count != "Unknown (login required)" %}
+                                    <!-- We have post count data even though authentication was required -->
+                                    <div class="alert alert-info">
+                                        <i data-feather="message-square" class="me-2"></i> {{ data.linkedin_data.posts.count }} posts published
+                                    </div>
+                                    
+                                    <!-- Show a softer message about limited access -->
+                                    <div class="alert alert-secondary mb-3">
+                                        <i data-feather="info" class="me-2"></i> Post content is only available with LinkedIn authentication.
+                                    </div>
+                                    {% else %}
+                                    <!-- No post count - show full authentication message -->
                                     <div class="alert alert-warning mb-3">
                                         <i data-feather="lock" class="me-2"></i> LinkedIn requires authentication to view detailed post content.
                                     </div>
@@ -354,6 +365,7 @@
                                     <div class="alert alert-info">
                                         <i data-feather="message-square" class="me-2"></i> {{ data.linkedin_data.posts.count }} posts published
                                     </div>
+                                    {% endif %}
                                     {% endif %}
                                     
                                     {% if data.linkedin_data.posts.posts %}
@@ -428,7 +440,18 @@
                             <!-- JOBS TAB -->
                             <div class="tab-pane fade" id="jobs-tab-pane" role="tabpanel" aria-labelledby="jobs-tab" tabindex="0">
                                 {% if data.linkedin_data.jobs and data.linkedin_data.jobs.authentication_required %}
-                                    <!-- Authentication Required Message for Jobs -->
+                                    {% if data.linkedin_data.jobs.count and data.linkedin_data.jobs.count != "0" and data.linkedin_data.jobs.count != 0 and data.linkedin_data.jobs.count != "Unknown (login required)" %}
+                                    <!-- We have job count data even though authentication was required -->
+                                    <div class="alert alert-info">
+                                        <i data-feather="briefcase" class="me-2"></i> {{ data.linkedin_data.jobs.count }} job openings available
+                                    </div>
+                                    
+                                    <!-- Show a softer message about limited access -->
+                                    <div class="alert alert-secondary mb-3">
+                                        <i data-feather="info" class="me-2"></i> Detailed job listings are only available with LinkedIn authentication.
+                                    </div>
+                                    {% else %}
+                                    <!-- No job count - show full authentication message -->
                                     <div class="alert alert-warning mb-3">
                                         <i data-feather="lock" class="me-2"></i> LinkedIn requires authentication to view complete job information.
                                     </div>
@@ -437,6 +460,7 @@
                                     <div class="alert alert-info">
                                         <i data-feather="briefcase" class="me-2"></i> {{ data.linkedin_data.jobs.count }} job openings available
                                     </div>
+                                    {% endif %}
                                     {% endif %}
                                     
                                     {% if data.linkedin_data.jobs.jobs %}
@@ -499,7 +523,18 @@
                             <!-- PEOPLE TAB -->
                             <div class="tab-pane fade" id="people-tab-pane" role="tabpanel" aria-labelledby="people-tab" tabindex="0">
                                 {% if data.linkedin_data.people and data.linkedin_data.people.authentication_required %}
-                                    <!-- Authentication Required Message for People -->
+                                    {% if data.linkedin_data.people.employee_count and data.linkedin_data.people.employee_count != "0" and data.linkedin_data.people.employee_count != 0 and data.linkedin_data.people.employee_count != "Unknown (login required)" %}
+                                    <!-- We have employee count data even though authentication was required -->
+                                    <div class="alert alert-info">
+                                        <i data-feather="users" class="me-2"></i> {{ data.linkedin_data.people.employee_count }} employees
+                                    </div>
+                                    
+                                    <!-- Show a softer message about limited access -->
+                                    <div class="alert alert-secondary mb-3">
+                                        <i data-feather="info" class="me-2"></i> Some additional employee details are only available with LinkedIn authentication.
+                                    </div>
+                                    {% else %}
+                                    <!-- No employee count - show full authentication message -->
                                     <div class="alert alert-warning mb-3">
                                         <i data-feather="lock" class="me-2"></i> LinkedIn requires authentication to view complete employee information.
                                     </div>
@@ -508,6 +543,7 @@
                                     <div class="alert alert-info">
                                         <i data-feather="users" class="me-2"></i> {{ data.linkedin_data.people.employee_count }} employees
                                     </div>
+                                    {% endif %}
                                     {% endif %}
                                     
                                     {% if data.linkedin_data.people.leaders %}
