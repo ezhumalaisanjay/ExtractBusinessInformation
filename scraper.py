@@ -337,29 +337,90 @@ def extract_linkedin_company_info(soup, url, text):
             if follower_match:
                 linkedin_info['follower_count'] = follower_match.group(1)
     
-    # Extract company overview/description - multiple possible locations
+    # Extract all company overview/description data with enhanced detection
     about_sections = []
-    # Try standard about section
+    
+    # Method 1: Try standard about section by class
     about_section = soup.find('section', class_=lambda c: c and 'artdeco-card' in c and ('about-us' in c or 'about-section' in c))
     if about_section:
         about_sections.append(about_section.text.strip())
+        logger.info("Found LinkedIn about section by class")
     
-    # Try other common about containers
-    about_div = soup.find('div', class_=lambda c: c and ('about-us' in c or 'description' in c or 'about-section' in c))
-    if about_div:
-        about_sections.append(about_div.text.strip())
+    # Method 2: Try by ID
+    about_section_id = soup.find(id=lambda i: i and ('about-us' in i or 'about-section' in i or 'overview' in i))
+    if about_section_id:
+        about_sections.append(about_section_id.text.strip())
+        logger.info("Found LinkedIn about section by ID")
     
-    # Try paragraphs within sections with "About" headings
-    about_heading = soup.find(['h2', 'h3'], string=lambda s: s and 'About' in s)
-    if about_heading:
-        parent = about_heading.parent
-        if parent:
-            paragraphs = parent.find_all('p')
-            if paragraphs:
-                about_sections.append(" ".join([p.text.strip() for p in paragraphs]))
+    # Method 3: Try other common about containers by class
+    about_containers = soup.find_all('div', class_=lambda c: c and any(term in c for term in ['about-us', 'description', 'about-section', 'overview', 'company-info']))
+    for container in about_containers:
+        about_sections.append(container.text.strip())
+        logger.info("Found LinkedIn about section by container class")
     
-    if about_sections:
-        linkedin_info['overview'] = max(about_sections, key=len)  # Use the longest description found
+    # Method 4: Find sections by heading content
+    about_headings = soup.find_all(['h1', 'h2', 'h3', 'h4'], string=lambda s: s and ('About' in s or 'Overview' in s or 'Company' in s))
+    for heading in about_headings:
+        # Get parent section or div
+        parent = heading
+        for _ in range(3):  # Go up to 3 levels up
+            if parent:
+                parent = parent.parent
+                if parent and parent.name in ['section', 'div']:
+                    about_sections.append(parent.text.strip())
+                    logger.info(f"Found LinkedIn about section from heading: {heading.text}")
+                    break
+    
+    # Method 5: Look specifically for paragraphs in about sections
+    for section_text in about_sections.copy():  # Use copy to avoid modifying while iterating
+        # Check for structured data within the text
+        about_lines = section_text.split('\n')
+        for line in about_lines:
+            # Look for "About" prefix
+            if line.strip().startswith('About'):
+                rest_of_line = line.strip()[5:].strip()  # Skip "About" and any spaces
+                if len(rest_of_line) > 50:  # If substantial content after "About"
+                    about_sections.append(rest_of_line)
+                    logger.info("Found LinkedIn about content from line starting with 'About'")
+    
+    # Method 6: Find paragraphs with substantial content
+    paragraphs = soup.find_all('p')
+    for p in paragraphs:
+        p_text = p.text.strip()
+        # Only include paragraphs with substantial content that might be overview text
+        if len(p_text) > 100 and p_text.count('.') > 2:  # Multiple sentences
+            about_sections.append(p_text)
+            logger.info("Found potential LinkedIn about content from paragraph")
+    
+    # Method 7: Look for meta description
+    meta_desc = soup.find('meta', attrs={'name': 'description'})
+    if meta_desc and meta_desc.has_attr('content'):
+        about_sections.append(meta_desc['content'])
+        logger.info("Found LinkedIn about content from meta description")
+    
+    # Filter and deduplicate about sections
+    filtered_sections = []
+    seen_content = set()
+    for section in about_sections:
+        # Clean the section text
+        clean_section = clean_text(section)
+        
+        # Skip if too short or already seen
+        if len(clean_section) < 50 or clean_section in seen_content:
+            continue
+            
+        filtered_sections.append(clean_section)
+        seen_content.add(clean_section)
+    
+    if filtered_sections:
+        # Use the longest description found, which is likely the most complete
+        linkedin_info['overview'] = max(filtered_sections, key=len)
+        
+        # Store all sections for comprehensive data
+        if len(filtered_sections) > 1:
+            linkedin_info['all_about_sections'] = filtered_sections
+            
+        logger.info(f"Extracted LinkedIn overview with {len(linkedin_info['overview'])} characters")
     
     # Extract all company info from text with enhanced patterns
     
