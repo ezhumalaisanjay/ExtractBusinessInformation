@@ -16,6 +16,34 @@
     color: white;
 }
 
+/* LinkedIn tabs styling */
+#linkedinTabs {
+    border-bottom: 1px solid #dee2e6;
+}
+
+#linkedinTabs .nav-link {
+    border: none;
+    color: #6c757d;
+    padding-bottom: 1rem;
+    font-weight: 500;
+}
+
+#linkedinTabs .nav-link:hover {
+    color: #fff;
+    border-bottom: 2px solid #6c757d;
+}
+
+#linkedinTabs .nav-link.active {
+    background-color: transparent;
+    color: #fff;
+    border-bottom: 2px solid #008672;
+}
+
+/* People tab highlighted like your screenshot */
+#linkedinTabs #people-tab.active {
+    border-bottom: 2px solid #008672;
+}
+
 .json-content {
     max-height: 400px;
     overflow-y: auto;

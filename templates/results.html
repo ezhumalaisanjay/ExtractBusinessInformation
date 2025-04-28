@@ -211,65 +211,254 @@
                         </h3>
                     </div>
                     <div class="card-body">
-                        {% if data.linkedin_data.overview %}
-                        <div class="mb-3">
-                            <h5>Company Overview</h5>
-                            <div class="p-3 bg-light rounded">
-                                <p class="mb-0">{{ data.linkedin_data.overview }}</p>
-                            </div>
-                        </div>
-                        {% endif %}
+                        <!-- LinkedIn Tab Navigation -->
+                        <ul class="nav nav-tabs" id="linkedinTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="about-tab" data-bs-toggle="tab" data-bs-target="#about-tab-pane" 
+                                        type="button" role="tab" aria-controls="about-tab-pane" aria-selected="true">About</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="posts-tab" data-bs-toggle="tab" data-bs-target="#posts-tab-pane" 
+                                        type="button" role="tab" aria-controls="posts-tab-pane" aria-selected="false">Posts</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="jobs-tab" data-bs-toggle="tab" data-bs-target="#jobs-tab-pane" 
+                                        type="button" role="tab" aria-controls="jobs-tab-pane" aria-selected="false">Jobs</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="people-tab" data-bs-toggle="tab" data-bs-target="#people-tab-pane" 
+                                        type="button" role="tab" aria-controls="people-tab-pane" aria-selected="false">People</button>
+                            </li>
+                        </ul>
                         
-                        {% if data.linkedin_data.specialties %}
-                        <div class="mb-3">
-                            <h5>Specialties</h5>
-                            <div class="d-flex flex-wrap gap-2 mb-2">
-                                {% for specialty in data.linkedin_data.specialties %}
-                                    <span class="badge bg-secondary">{{ specialty }}</span>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        {% endif %}
-                        
-                        {% if data.linkedin_data.milestones %}
-                        <div class="mb-3">
-                            <h5>Company Milestones</h5>
-                            <div class="list-group">
-                                {% for milestone in data.linkedin_data.milestones %}
-                                    <div class="list-group-item">
-                                        <strong><i data-feather="flag" class="me-1"></i> {{ milestone }}</strong>
+                        <!-- Tab Content -->
+                        <div class="tab-content pt-3" id="linkedinTabContent">
+                            <!-- ABOUT TAB -->
+                            <div class="tab-pane fade show active" id="about-tab-pane" role="tabpanel" aria-labelledby="about-tab" tabindex="0">
+                                {% if data.linkedin_data.overview %}
+                                <div class="mb-3">
+                                    <h5>Company Overview</h5>
+                                    <div class="p-3 bg-light rounded">
+                                        <p class="mb-0">{{ data.linkedin_data.overview }}</p>
                                     </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        {% endif %}
-                        
-                        {% if data.linkedin_data.all_about_sections %}
-                        <div class="mb-3">
-                            <h5>Additional About Details</h5>
-                            <div class="accordion" id="aboutSectionsAccordion">
-                                {% for section in data.linkedin_data.all_about_sections %}
-                                    {% if section != data.linkedin_data.overview %}
-                                    <div class="accordion-item">
-                                        <h2 class="accordion-header" id="section-{{ loop.index }}">
-                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                                                    data-bs-target="#section-content-{{ loop.index }}" aria-expanded="false" 
-                                                    aria-controls="section-content-{{ loop.index }}">
-                                                About Section {{ loop.index }}
-                                            </button>
-                                        </h2>
-                                        <div id="section-content-{{ loop.index }}" class="accordion-collapse collapse" 
-                                             aria-labelledby="section-{{ loop.index }}" data-bs-parent="#aboutSectionsAccordion">
-                                            <div class="accordion-body">
-                                                <p>{{ section }}</p>
+                                </div>
+                                {% endif %}
+                                
+                                {% if data.linkedin_data.specialties %}
+                                <div class="mb-3">
+                                    <h5>Specialties</h5>
+                                    <div class="d-flex flex-wrap gap-2 mb-2">
+                                        {% for specialty in data.linkedin_data.specialties %}
+                                            <span class="badge bg-secondary">{{ specialty }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                {% if data.linkedin_data.milestones %}
+                                <div class="mb-3">
+                                    <h5>Company Milestones</h5>
+                                    <div class="list-group">
+                                        {% for milestone in data.linkedin_data.milestones %}
+                                            <div class="list-group-item">
+                                                <strong><i data-feather="flag" class="me-1"></i> {{ milestone }}</strong>
                                             </div>
-                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                {% if data.linkedin_data.all_about_sections %}
+                                <div class="mb-3">
+                                    <h5>Additional About Details</h5>
+                                    <div class="accordion" id="aboutSectionsAccordion">
+                                        {% for section in data.linkedin_data.all_about_sections %}
+                                            {% if section != data.linkedin_data.overview %}
+                                            <div class="accordion-item">
+                                                <h2 class="accordion-header" id="section-{{ loop.index }}">
+                                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                                            data-bs-target="#section-content-{{ loop.index }}" aria-expanded="false" 
+                                                            aria-controls="section-content-{{ loop.index }}">
+                                                        About Section {{ loop.index }}
+                                                    </button>
+                                                </h2>
+                                                <div id="section-content-{{ loop.index }}" class="accordion-collapse collapse" 
+                                                     aria-labelledby="section-{{ loop.index }}" data-bs-parent="#aboutSectionsAccordion">
+                                                    <div class="accordion-body">
+                                                        <p>{{ section }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- POSTS TAB -->
+                            <div class="tab-pane fade" id="posts-tab-pane" role="tabpanel" aria-labelledby="posts-tab" tabindex="0">
+                                {% if data.linkedin_data.post_count or data.linkedin_data.post_summaries %}
+                                <div class="mb-3">
+                                    {% if data.linkedin_data.post_count %}
+                                    <div class="alert alert-info">
+                                        <i data-feather="message-square" class="me-2"></i> {{ data.linkedin_data.post_count }} posts published
                                     </div>
                                     {% endif %}
-                                {% endfor %}
+                                    
+                                    {% if data.linkedin_data.post_summaries %}
+                                    <h5 class="mt-3">Recent Posts</h5>
+                                    <div class="list-group">
+                                        {% for post in data.linkedin_data.post_summaries %}
+                                        <div class="list-group-item">
+                                            <p class="mb-1">{{ post }}</p>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if data.linkedin_data.recent_posts %}
+                                    <h5 class="mt-3">Post Details</h5>
+                                    <div class="accordion" id="postsAccordion">
+                                        {% for post in data.linkedin_data.recent_posts %}
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="post-header-{{ loop.index }}">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                                        data-bs-target="#post-content-{{ loop.index }}" aria-expanded="false" 
+                                                        aria-controls="post-content-{{ loop.index }}">
+                                                    Post {{ loop.index }} - {{ post.date if post.date else "Recent" }}
+                                                </button>
+                                            </h2>
+                                            <div id="post-content-{{ loop.index }}" class="accordion-collapse collapse" 
+                                                 aria-labelledby="post-header-{{ loop.index }}" data-bs-parent="#postsAccordion">
+                                                <div class="accordion-body">
+                                                    <p>{{ post.text }}</p>
+                                                    {% if post.reactions %}
+                                                    <div class="mt-2 d-flex align-items-center">
+                                                        <i data-feather="thumbs-up" class="me-1"></i>
+                                                        <span class="text-muted">{{ post.reactions }} reactions</span>
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% else %}
+                                <div class="alert alert-secondary">
+                                    <i data-feather="info" class="me-2"></i> No posts information available for this company.
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- JOBS TAB -->
+                            <div class="tab-pane fade" id="jobs-tab-pane" role="tabpanel" aria-labelledby="jobs-tab" tabindex="0">
+                                {% if data.linkedin_data.job_opening_count or data.linkedin_data.job_openings %}
+                                <div class="mb-3">
+                                    {% if data.linkedin_data.job_opening_count %}
+                                    <div class="alert alert-info">
+                                        <i data-feather="briefcase" class="me-2"></i> {{ data.linkedin_data.job_opening_count }} job openings available
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if data.linkedin_data.job_openings %}
+                                    <h5 class="mt-3">Current Openings</h5>
+                                    <div class="list-group">
+                                        {% for job in data.linkedin_data.job_openings %}
+                                        <div class="list-group-item">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h6 class="mb-1">{{ job.title }}</h6>
+                                                {% if job.date_posted %}
+                                                <span class="badge bg-secondary">{{ job.date_posted }}</span>
+                                                {% endif %}
+                                            </div>
+                                            {% if job.location %}
+                                            <p class="mb-0 text-muted">
+                                                <i data-feather="map-pin" class="me-1"></i> {{ job.location }}
+                                            </p>
+                                            {% endif %}
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% else %}
+                                <div class="alert alert-secondary">
+                                    <i data-feather="info" class="me-2"></i> No job openings information available for this company.
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- PEOPLE TAB -->
+                            <div class="tab-pane fade" id="people-tab-pane" role="tabpanel" aria-labelledby="people-tab" tabindex="0">
+                                {% if data.linkedin_data.employee_count_from_people or data.linkedin_data.leadership_team or data.linkedin_data.departments or data.linkedin_data.employee_locations %}
+                                <div class="mb-3">
+                                    {% if data.linkedin_data.employee_count_from_people %}
+                                    <div class="alert alert-info">
+                                        <i data-feather="users" class="me-2"></i> {{ data.linkedin_data.employee_count_from_people }} employees
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if data.linkedin_data.leadership_team %}
+                                    <h5 class="mt-3">Leadership Team</h5>
+                                    <div class="list-group mb-3">
+                                        {% for leader in data.linkedin_data.leadership_team %}
+                                        <div class="list-group-item">
+                                            <h6 class="mb-1">{{ leader.name }}</h6>
+                                            {% if leader.title %}
+                                            <p class="mb-0 text-muted">{{ leader.title }}</p>
+                                            {% endif %}
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <div class="row">
+                                        {% if data.linkedin_data.departments %}
+                                        <div class="col-md-6 mb-3">
+                                            <h5>Departments</h5>
+                                            <div class="list-group">
+                                                {% for department in data.linkedin_data.departments %}
+                                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                    {{ department.department }}
+                                                    {% if department.percentage %}
+                                                    <span class="badge bg-primary">{{ department.percentage }}</span>
+                                                    {% endif %}
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                        
+                                        {% if data.linkedin_data.employee_locations %}
+                                        <div class="col-md-6 mb-3">
+                                            <h5>Locations</h5>
+                                            <div class="list-group">
+                                                {% for location in data.linkedin_data.employee_locations %}
+                                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                    {{ location.location }}
+                                                    {% if location.percentage %}
+                                                    <span class="badge bg-primary">{{ location.percentage }}</span>
+                                                    {% endif %}
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% else %}
+                                <div class="alert alert-secondary">
+                                    <i data-feather="info" class="me-2"></i> No people information available for this company.
+                                </div>
+                                {% endif %}
                             </div>
                         </div>
-                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
                         
                         {% if data.linkedin_data.website %}
                         <div class="mb-3">
