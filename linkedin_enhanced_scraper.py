@@ -424,31 +424,81 @@ def extract_people(linkedin_url):
         count_patterns = [
             r'(\d+[\,\d]*)\s*(employees?|people)',
             r'company size:?\s*(\d+[\,\d]*)',
-            r'team size:?\s*(\d+[\,\d]*)'
+            r'team size:?\s*(\d+[\,\d]*)',
+            r'(\d+[\,\d]*)\s*(?:employees?|people) on Linkedin',
+            r'([\d,]+)\s*followers'  # Fallback: follower count can give a rough idea of company size
         ]
         
+        # Search for employee count in page text
+        text_content = soup.get_text()
         for pattern in count_patterns:
-            count_element = soup.find(['span', 'div'], string=re.compile(pattern, re.I))
-            if count_element:
-                count_match = re.search(pattern, count_element.text, re.I)
-                if count_match:
-                    try:
-                        # Remove commas and convert to int
-                        count_str = count_match.group(1).replace(',', '')
-                        people_data['employee_count'] = int(count_str)
-                        logger.info(f"Found employee count: {people_data['employee_count']}")
-                        break
-                    except ValueError:
-                        logger.warning(f"Could not convert employee count to integer: {count_match.group(1)}")
+            count_match = re.search(pattern, text_content, re.I)
+            if count_match:
+                try:
+                    # Remove commas and convert to int
+                    count_str = count_match.group(1).replace(',', '')
+                    people_data['employee_count'] = int(count_str)
+                    logger.info(f"Found employee count from text: {people_data['employee_count']}")
+                    break
+                except ValueError:
+                    logger.warning(f"Could not convert employee count to integer: {count_match.group(1)}")
         
-        # Look for alternative employee count indicators if login redirected
-        if login_redirect and (not people_data['employee_count'] or people_data['employee_count'] == 0):
-            # Check for company size text
-            size_element = soup.find(['div', 'span'], string=re.compile(r'(1-10|11-50|51-200|201-500|501-1000|1001-5000|5001-10000|10001\+)', re.I))
-            if size_element:
-                size_text = size_element.text.strip()
-                people_data['employee_count'] = size_text
-                logger.info(f"Found company size range: {size_text}")
+        # If the text search didn't yield results, try with element search
+        if not people_data['employee_count'] or people_data['employee_count'] == 0:
+            for pattern in count_patterns:
+                count_element = soup.find(['span', 'div'], string=re.compile(pattern, re.I))
+                if count_element:
+                    count_match = re.search(pattern, count_element.text, re.I)
+                    if count_match:
+                        try:
+                            # Remove commas and convert to int
+                            count_str = count_match.group(1).replace(',', '')
+                            people_data['employee_count'] = int(count_str)
+                            logger.info(f"Found employee count from element: {people_data['employee_count']}")
+                            break
+                        except ValueError:
+                            logger.warning(f"Could not convert employee count to integer: {count_match.group(1)}")
+        
+        # Look for alternative employee count indicators if login redirected or no count found
+        if (login_redirect or not people_data['employee_count'] or people_data['employee_count'] == 0):
+            # Check for company size range text
+            size_patterns = [
+                r'(1-10|11-50|51-200|201-500|501-1000|1001-5000|5001-10000|10001\+)\s*employees',
+                r'company size:?\s*(1-10|11-50|51-200|201-500|501-1000|1001-5000|5001-10000|10001\+)',
+                r'employees:?\s*(1-10|11-50|51-200|201-500|501-1000|1001-5000|5001-10000|10001\+)'
+            ]
+            
+            # Try to find size range in full text first
+            for pattern in size_patterns:
+                size_match = re.search(pattern, text_content, re.I)
+                if size_match:
+                    size_text = size_match.group(1).strip()
+                    people_data['employee_count'] = size_text
+                    logger.info(f"Found company size range from text: {size_text}")
+                    break
+            
+            # If still no size, look for elements
+            if not people_data['employee_count'] or people_data['employee_count'] == 0:
+                # Check for company size text in elements
+                for pattern in size_patterns:
+                    size_element = soup.find(['div', 'span'], string=re.compile(pattern, re.I))
+                    if size_element:
+                        size_match = re.search(pattern, size_element.text, re.I)
+                        if size_match:
+                            size_text = size_match.group(1).strip()
+                            people_data['employee_count'] = size_text
+                            logger.info(f"Found company size range from element: {size_text}")
+                            break
+                
+                # If still no size found, check for any "company size" section
+                size_section = soup.find(['h3', 'h4', 'div'], string=re.compile(r'company size', re.I))
+                if size_section:
+                    next_elem = size_section.find_next(['p', 'div', 'span'])
+                    if next_elem:
+                        size_text = next_elem.text.strip()
+                        if size_text and len(size_text) < 50:  # Sanity check on length
+                            people_data['employee_count'] = size_text
+                            logger.info(f"Found company size section text: {size_text}")
         
         # If still no count but login required
         if login_redirect and (not people_data['employee_count'] or people_data['employee_count'] == 0):
