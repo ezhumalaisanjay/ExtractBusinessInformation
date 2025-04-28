@@ -2,6 +2,7 @@ import os
 import logging
 from flask import Flask, render_template, request, jsonify, flash, redirect, url_for
 from scraper import scrape_website
+from linkedin_finder import extract_linkedin_url, find_and_extract_linkedin_about
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -20,6 +21,7 @@ def index():
 def scrape():
     """Handle website scraping requests"""
     url = request.form.get('url')
+    mode = request.form.get('mode', 'direct')  # Default to direct scraping
     
     if not url:
         flash('Please enter a valid URL', 'danger')
@@ -29,15 +31,41 @@ def scrape():
     if not url.startswith(('http://', 'https://')):
         url = 'https://' + url
 
-    logger.debug(f"Scraping URL: {url}")
+    logger.debug(f"Scraping URL: {url} in mode: {mode}")
     
     try:
-        result = scrape_website(url)
-        if result is None:
-            flash('Failed to extract data from the website', 'danger')
-            return redirect(url_for('index'))
+        # Direct scraping mode (LinkedIn or any website)
+        if mode == 'direct':
+            result = scrape_website(url)
+            if result is None:
+                flash('Failed to extract data from the website', 'danger')
+                return redirect(url_for('index'))
+            
+            return render_template('results.html', data=result, url=url)
         
-        return render_template('results.html', data=result, url=url)
+        # Find LinkedIn URL from company website and then scrape
+        elif mode == 'find_linkedin':
+            logger.info(f"Finding LinkedIn URL from website: {url}")
+            linkedin_result = find_and_extract_linkedin_about(url)
+            
+            if not linkedin_result["success"]:
+                flash(f'Failed to find LinkedIn profile: {linkedin_result["message"]}', 'danger')
+                return redirect(url_for('index'))
+            
+            # We have LinkedIn data - prepare for display
+            result = linkedin_result["company_data"]
+            linkedin_url = linkedin_result["linkedin_url"]
+            
+            flash(f'Successfully found and extracted LinkedIn profile: {linkedin_url}', 'success')
+            return render_template('results.html', 
+                                  data=result, 
+                                  url=url, 
+                                  linkedin_url=linkedin_url,
+                                  source_website=url)
+        
+        else:
+            flash(f'Invalid scraping mode: {mode}', 'danger')
+            return redirect(url_for('index'))
     
     except Exception as e:
         logger.error(f"Error scraping website: {str(e)}")
@@ -56,26 +84,94 @@ def api_scrape():
         }), 400
     
     url = data['url']
+    mode = data.get('mode', 'direct')  # Default to direct scraping
     
     # Add http:// prefix if not present
     if not url.startswith(('http://', 'https://')):
         url = 'https://' + url
     
     try:
-        result = scrape_website(url)
-        if result is None:
+        # Direct scraping mode
+        if mode == 'direct':
+            result = scrape_website(url)
+            if result is None:
+                return jsonify({
+                    'success': False,
+                    'error': 'Failed to extract data from the website'
+                }), 500
+            
+            return jsonify({
+                'success': True,
+                'data': result
+            })
+        
+        # Find LinkedIn URL from website and then scrape it
+        elif mode == 'find_linkedin':
+            linkedin_result = find_and_extract_linkedin_about(url)
+            
+            if not linkedin_result["success"]:
+                return jsonify({
+                    'success': False,
+                    'error': linkedin_result["message"],
+                    'website_url': url,
+                    'linkedin_url': linkedin_result.get('linkedin_url')
+                }), 404
+            
+            return jsonify({
+                'success': True,
+                'website_url': url,
+                'linkedin_url': linkedin_result["linkedin_url"],
+                'data': linkedin_result["company_data"]
+            })
+            
+        else:
             return jsonify({
                 'success': False,
-                'error': 'Failed to extract data from the website'
-            }), 500
-        
-        return jsonify({
-            'success': True,
-            'data': result
-        })
+                'error': f'Invalid mode: {mode}. Use "direct" or "find_linkedin".'
+            }), 400
     
     except Exception as e:
         logger.error(f"API error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+        
+@app.route('/api/find_linkedin', methods=['POST'])
+def api_find_linkedin():
+    """API endpoint just for finding LinkedIn URLs without scraping them"""
+    data = request.get_json()
+    
+    if not data or 'url' not in data:
+        return jsonify({
+            'success': False,
+            'error': 'URL parameter is required'
+        }), 400
+    
+    url = data['url']
+    
+    # Add http:// prefix if not present
+    if not url.startswith(('http://', 'https://')):
+        url = 'https://' + url
+    
+    try:
+        linkedin_url = extract_linkedin_url(url)
+        
+        if not linkedin_url:
+            return jsonify({
+                'success': False,
+                'error': f'No LinkedIn URL found on website: {url}',
+                'website_url': url
+            }), 404
+        
+        return jsonify({
+            'success': True,
+            'website_url': url,
+            'linkedin_url': linkedin_url
+        })
+    
+    except Exception as e:
+        logger.error(f"API find LinkedIn error: {str(e)}")
         return jsonify({
             'success': False,
             'error': str(e)
