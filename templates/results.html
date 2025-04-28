@@ -126,6 +126,20 @@
                                     </ul>
                                 </div>
                                 {% endif %}
+                                
+                                {% if data.linkedin_data and data.linkedin_data.revenue %}
+                                <div class="mb-3">
+                                    <h5><i data-feather="dollar-sign" class="me-2"></i> Revenue Information</h5>
+                                    <p>{{ data.linkedin_data.revenue }}</p>
+                                </div>
+                                {% endif %}
+                                
+                                {% if data.linkedin_data and data.linkedin_data.highlights %}
+                                <div class="mb-3">
+                                    <h5><i data-feather="award" class="me-2"></i> Company Highlights</h5>
+                                    <p>{{ data.linkedin_data.highlights }}</p>
+                                </div>
+                                {% endif %}
                             </div>
                         {% endif %}
                         
@@ -174,6 +188,56 @@
                                 <li class="list-group-item">{{ product }}</li>
                             {% endfor %}
                         </ul>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- LinkedIn Data Section -->
+                {% if data.linkedin_data and data.linkedin_data.overview %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3 class="card-title mb-0">
+                            <i data-feather="linkedin"></i> LinkedIn Profile
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        {% if data.linkedin_data.overview %}
+                        <div class="mb-3">
+                            <h5>Company Overview</h5>
+                            <p>{{ data.linkedin_data.overview }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if data.linkedin_data.website %}
+                        <div class="mb-3">
+                            <h5>Website</h5>
+                            <p><a href="{{ data.linkedin_data.website }}" target="_blank">{{ data.linkedin_data.website }}</a></p>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="row">
+                            {% if data.linkedin_data.follower_count %}
+                            <div class="col-md-6 mb-3">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title"><i data-feather="users"></i> Followers</h5>
+                                        <p class="h3">{{ data.linkedin_data.follower_count }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if data.linkedin_data.company_size %}
+                            <div class="col-md-6 mb-3">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title"><i data-feather="user-plus"></i> Company Size</h5>
+                                        <p class="h3">{{ data.linkedin_data.company_size }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
                 {% endif %}

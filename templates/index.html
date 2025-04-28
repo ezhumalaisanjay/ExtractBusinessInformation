@@ -33,16 +33,31 @@
                             {% endif %}
                         {% endwith %}
 
-                        <p class="lead mb-4">Enter a business website URL to extract company information, contact details, services, and products.</p>
+                        <p class="lead mb-4">Enter a business website URL to extract company information, contact details, services, and products. For more detailed company history, founding dates, funding, and operational data, try scraping a LinkedIn company page.</p>
                         
                         <form action="{{ url_for('scrape') }}" method="POST">
                             <div class="input-group mb-3">
-                                <input type="text" class="form-control" name="url" placeholder="https://example.com" required>
+                                <input type="text" class="form-control" name="url" placeholder="https://example.com or linkedin.com/company/microsoft" required>
                                 <button class="btn btn-primary" type="submit">
                                     <i data-feather="search"></i> Scrape
                                 </button>
                             </div>
+                            <div class="form-text mb-3">
+                                <i data-feather="info" class="feather-sm text-info"></i> 
+                                Our advanced scraper can extract detailed company history, founding dates, funding information, and operational timelines
+                            </div>
                         </form>
+                        
+                        <div class="alert alert-info" role="alert">
+                            <h5><i data-feather="linkedin" class="me-2"></i> Enhanced LinkedIn Scraping!</h5>
+                            <p>To get detailed company information including founding dates, history, operational timeline, funding, revenue, and more, try scraping LinkedIn company pages.</p>
+                            <p>For example:</p>
+                            <ul>
+                                <li>linkedin.com/company/microsoft</li>
+                                <li>linkedin.com/company/apple</li>
+                                <li>linkedin.com/company/amazon</li>
+                            </ul>
+                        </div>
                     </div>
                     <div class="card-footer">
                         <div class="small text-muted">

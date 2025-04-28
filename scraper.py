@@ -306,69 +306,221 @@ def extract_linkedin_company_info(soup, url, text):
     linkedin_info = {}
     
     # Check if this is a LinkedIn page
-    if 'linkedin.com/company/' not in url and 'linkedin.com/school/' not in url:
+    if 'linkedin.com/company/' not in url and 'linkedin.com/school/' not in url and 'linkedin.com/in/' not in url:
         return {}
     
+    logger.info(f"Detected LinkedIn URL: {url}, extracting specialized LinkedIn info")
+    
     # Extract the company name from LinkedIn
-    li_company_name_elem = soup.find('h1', class_=lambda c: c and 'org-top-card-summary__title' in c)
+    # Try multiple class patterns to account for LinkedIn UI changes
+    li_company_name_elem = soup.find('h1', class_=lambda c: c and ('org-top-card-summary__title' in c or 
+                                                                'top-card-layout__title' in c or
+                                                                'artdeco-entity-lockup__title' in c))
+    if not li_company_name_elem:
+        # Try generic h1 in header or profile section
+        li_company_name_elem = soup.find('h1')
+    
     if li_company_name_elem:
         linkedin_info['company_name'] = li_company_name_elem.text.strip()
     
-    # Extract follower count
-    follower_elem = soup.find('div', class_=lambda c: c and 'org-top-card-summary__follower-count' in c)
+    # Extract follower count - try multiple patterns
+    follower_elem = soup.find(['div', 'span'], class_=lambda c: c and ('org-top-card-summary__follower-count' in c or 
+                                                                     'top-card-layout__entity-info' in c or
+                                                                     'follower-count' in c))
     if follower_elem:
         follower_text = follower_elem.text.strip()
-        follower_match = re.search(r'([\d,]+)', follower_text)
+        follower_match = re.search(r'([\d,\.]+\s*(?:followers|connections|people|professionals))', follower_text, re.I)
         if follower_match:
             linkedin_info['follower_count'] = follower_match.group(1)
+        else:
+            follower_match = re.search(r'([\d,\.]+[KMB]?\+?)', follower_text)
+            if follower_match:
+                linkedin_info['follower_count'] = follower_match.group(1)
     
-    # Extract company overview/description
-    about_section = soup.find('section', class_=lambda c: c and 'artdeco-card' in c and 'about-us' in c)
+    # Extract company overview/description - multiple possible locations
+    about_sections = []
+    # Try standard about section
+    about_section = soup.find('section', class_=lambda c: c and 'artdeco-card' in c and ('about-us' in c or 'about-section' in c))
     if about_section:
-        linkedin_info['overview'] = about_section.text.strip()
+        about_sections.append(about_section.text.strip())
     
-    # Extract company size
-    size_pattern = r'(?:company\s+size|size)(?:\s*:)?\s*(\d{1,3}(?:,\d{3})*(?:\s*-\s*\d{1,3}(?:,\d{3})*|\+))'
-    size_match = re.search(size_pattern, text, re.I)
-    if size_match:
-        linkedin_info['company_size'] = size_match.group(1)
+    # Try other common about containers
+    about_div = soup.find('div', class_=lambda c: c and ('about-us' in c or 'description' in c or 'about-section' in c))
+    if about_div:
+        about_sections.append(about_div.text.strip())
     
-    # Extract founded date
-    founded_pattern = r'(?:founded|established)(?:\s*:)?\s*(\d{4})'
-    founded_match = re.search(founded_pattern, text, re.I)
-    if founded_match:
-        linkedin_info['founded'] = founded_match.group(1)
+    # Try paragraphs within sections with "About" headings
+    about_heading = soup.find(['h2', 'h3'], string=lambda s: s and 'About' in s)
+    if about_heading:
+        parent = about_heading.parent
+        if parent:
+            paragraphs = parent.find_all('p')
+            if paragraphs:
+                about_sections.append(" ".join([p.text.strip() for p in paragraphs]))
     
-    # Extract industry
-    industry_pattern = r'(?:industry|sector)(?:\s*:)?\s*([A-Za-z, &]+)'
-    industry_match = re.search(industry_pattern, text, re.I)
-    if industry_match:
-        linkedin_info['industry'] = industry_match.group(1).strip()
+    if about_sections:
+        linkedin_info['overview'] = max(about_sections, key=len)  # Use the longest description found
     
-    # Extract headquarters location
-    hq_pattern = r'(?:headquarters|location)(?:\s*:)?\s*([A-Za-z, ]+)'
-    hq_match = re.search(hq_pattern, text, re.I)
-    if hq_match:
-        linkedin_info['headquarters'] = hq_match.group(1).strip()
+    # Extract all company info from text with enhanced patterns
     
-    # Extract specialties
-    specialties_section = re.search(r'specialties(?:\s*:)?\s*([^\.]+)', text, re.I)
-    if specialties_section:
-        specialties_text = specialties_section.group(1)
-        specialties = [s.strip() for s in specialties_text.split(',')]
-        linkedin_info['specialties'] = specialties
+    # Company size
+    size_patterns = [
+        r'(?:company\s+size|size|employees)(?:\s*:)?\s*(\d{1,3}(?:,\d{3})*(?:\s*-\s*\d{1,3}(?:,\d{3})*|\+))',
+        r'(?:company\s+size|size|employees)(?:\s*:)?\s*(\d+(?:,\d+)*(?:\s*to\s*\d+(?:,\d+)*|\+)?)',
+        r'(\d+(?:,\d+)*(?:\s*-\s*\d+(?:,\d+)*|\+))\s+employees'
+    ]
     
-    # Extract funding information
-    funding_pattern = r'(?:funding|raised|investment|capital|series\s+[a-z])(?:\s+\w+){0,3}\s+(?:of|totaling|totalling|reaching|approximately|about|around|nearly|over)?\s+(?:\$|€|£|¥)?(\d+(?:[\.,]\d+)?)\s*(?:million|billion|trillion|m|b|t|M|B|T)'
-    funding_match = re.search(funding_pattern, text, re.I)
-    if funding_match:
-        linkedin_info['funding'] = funding_match.group(0)
+    for pattern in size_patterns:
+        size_match = re.search(pattern, text, re.I)
+        if size_match:
+            linkedin_info['company_size'] = size_match.group(1)
+            break
     
-    # Extract website from LinkedIn page
-    website_elem = soup.find('a', class_=lambda c: c and 'org-about-us-company-module__website' in c)
+    # Founded date - try multiple patterns
+    founded_patterns = [
+        r'(?:founded|established)(?:\s*:)?\s*(\d{4})',
+        r'(?:founded|established)(?:\s+in)?\s+(\d{4})',
+        r'(?:since|founded|established)\s+(\d{4})',
+        r'founded(?:\s*:)?\s*(\w+\s+\d{4})'  # Month and year
+    ]
+    
+    for pattern in founded_patterns:
+        founded_match = re.search(pattern, text, re.I)
+        if founded_match:
+            linkedin_info['founded'] = founded_match.group(1)
+            # Capture surrounding context for founding info
+            context_pattern = r'(.{0,50}' + re.escape(founded_match.group(0)) + r'.{0,50})'
+            context_match = re.search(context_pattern, text, re.I | re.DOTALL)
+            if context_match:
+                linkedin_info['founding_context'] = clean_text(context_match.group(1))
+            break
+    
+    # Industry with improved matching
+    industry_patterns = [
+        r'(?:industry|sector)(?:\s*:)?\s*([A-Za-z0-9, &/]+)',
+        r'(?:industry|sector)(?:\s*:)?\s*([^\.]+)',
+        r'(?:in\s+the\s+)([A-Za-z, &]+)(?:\s+industry|sector)'
+    ]
+    
+    for pattern in industry_patterns:
+        industry_match = re.search(pattern, text, re.I)
+        if industry_match:
+            industry = industry_match.group(1).strip()
+            if 5 < len(industry) < 100:  # Reasonable length check
+                linkedin_info['industry'] = industry
+                break
+    
+    # Headquarters location - enhanced patterns
+    hq_patterns = [
+        r'(?:headquarters|location|based\s+in)(?:\s*:)?\s*([A-Za-z0-9, ]+)',
+        r'(?:headquartered|located)\s+in\s+([A-Za-z0-9, ]+)',
+        r'(?:HQ|main\s+office)(?:\s*:)?\s+([A-Za-z0-9, ]+)'
+    ]
+    
+    for pattern in hq_patterns:
+        hq_match = re.search(pattern, text, re.I)
+        if hq_match:
+            hq_location = hq_match.group(1).strip()
+            if 3 < len(hq_location) < 100:  # Reasonable length check
+                linkedin_info['headquarters'] = hq_location
+                break
+    
+    # Extract specialties with improved matching
+    specialties_patterns = [
+        r'specialties(?:\s*:)?\s*([^\.]+)',
+        r'specializing\s+in\s+([^\.]+)',
+        r'expertise(?:\s+in)?(?:\s*:)?\s*([^\.]+)'
+    ]
+    
+    for pattern in specialties_patterns:
+        specialties_match = re.search(pattern, text, re.I)
+        if specialties_match:
+            specialties_text = specialties_match.group(1)
+            # Split by commas or "and"
+            specialties = re.split(r',\s*|\s+and\s+', specialties_text)
+            linkedin_info['specialties'] = [s.strip() for s in specialties if len(s.strip()) > 3]
+            break
+    
+    # Extract funding/financial information with enhanced patterns
+    funding_patterns = [
+        r'(?:funding|raised|investment|capital|series\s+[a-z])(?:\s+\w+){0,3}\s+(?:of|totaling|totalling|reaching|approximately|about|around|nearly|over)?\s+(?:\$|€|£|¥)?(\d+(?:[\.,]\d+)?)\s*(?:million|billion|trillion|m|b|t|M|B|T)',
+        r'(?:funding|raised|investment|capital)(?:\s+of)?\s+(?:\$|€|£|¥)(\d+(?:[\.,]\d+)?)\s*(?:million|billion|trillion|[MBT])',
+        r'(?:series\s+[a-z])(?:\s+funding)?\s+(?:of)?\s+(?:\$|€|£|¥)?(\d+(?:[\.,]\d+)?)\s*(?:million|billion|trillion|[MBT])',
+        r'(?:valuation|valued\s+at)\s+(?:\$|€|£|¥)?(\d+(?:[\.,]\d+)?)\s*(?:million|billion|trillion|[MBT])'
+    ]
+    
+    for pattern in funding_patterns:
+        funding_match = re.search(pattern, text, re.I)
+        if funding_match:
+            # Capture full context of the funding information
+            context_pattern = r'(.{0,100}' + re.escape(funding_match.group(0)) + r'.{0,100})'
+            context_match = re.search(context_pattern, text, re.I | re.DOTALL)
+            if context_match:
+                linkedin_info['funding'] = clean_text(context_match.group(1))
+            else:
+                linkedin_info['funding'] = funding_match.group(0)
+            break
+    
+    # Extract revenue information
+    revenue_patterns = [
+        r'(?:revenue|sales|turnover)(?:\s+\w+){0,3}\s+(?:of|is|was|reached|exceeded|approximately|about|around|nearly|over)?\s+(?:\$|€|£|¥)?(\d+(?:[\.,]\d+)?)\s*(?:million|billion|trillion|[MBT])',
+        r'annual\s+(?:revenue|sales)\s+(?:of)?\s+(?:\$|€|£|¥)?(\d+(?:[\.,]\d+)?)\s*(?:million|billion|trillion|[MBT])'
+    ]
+    
+    for pattern in revenue_patterns:
+        revenue_match = re.search(pattern, text, re.I)
+        if revenue_match:
+            context_pattern = r'(.{0,100}' + re.escape(revenue_match.group(0)) + r'.{0,100})'
+            context_match = re.search(context_pattern, text, re.I | re.DOTALL)
+            if context_match:
+                linkedin_info['revenue'] = clean_text(context_match.group(1))
+            else:
+                linkedin_info['revenue'] = revenue_match.group(0)
+            break
+    
+    # Extract milestone/timeline information
+    timeline_patterns = [
+        r'(\d{4})(?:\s*(?:-|–|:)\s*)([^\.;]+)',
+        r'(?:in|since)\s+(\d{4})(?:\s*,)?\s+([^\.;]+)'
+    ]
+    
+    milestones = []
+    for pattern in timeline_patterns:
+        matches = re.findall(pattern, text, re.I)
+        for match in matches:
+            if isinstance(match, tuple) and len(match) >= 2:
+                year = match[0]
+                event = match[1].strip()
+                if len(event) > 10:  # Skip very short descriptions
+                    milestones.append(f"{year}: {event}")
+    
+    if milestones:
+        linkedin_info['milestones'] = milestones[:5]  # Limit to top 5 milestones
+    
+    # Extract website from LinkedIn page - try multiple patterns
+    website_elem = soup.find('a', class_=lambda c: c and ('org-about-us-company-module__website' in c or 
+                                                      'top-card-link' in c or
+                                                      'website' in c))
     if website_elem:
         linkedin_info['website'] = website_elem.get('href')
     
+    # Try to extract any additional profile sections that contain key business information
+    sections = soup.find_all(['section', 'div'], class_=lambda c: c and ('artdeco-card' in c or 'profile-section' in c))
+    for section in sections:
+        # Get section title or heading
+        section_title_elem = section.find(['h2', 'h3'])
+        if section_title_elem:
+            section_title = section_title_elem.text.strip().lower()
+            section_content = section.text.strip()
+            
+            # Check for interesting sections by keywords
+            if any(keyword in section_title for keyword in ['about', 'overview', 'history', 'timeline']):
+                if 'overview' not in linkedin_info:
+                    linkedin_info['overview'] = section_content
+            elif any(keyword in section_title for keyword in ['highlight', 'achievement', 'accomplishment']):
+                linkedin_info['highlights'] = section_content
+    
+    logger.info(f"Extracted LinkedIn data: {', '.join(linkedin_info.keys())}")
     return linkedin_info
 
 def scrape_website(url):

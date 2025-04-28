@@ -3,6 +3,17 @@
 .feather-sm {
     width: 16px;
     height: 16px;
+    vertical-align: text-bottom;
+}
+
+/* LinkedIn styling */
+.alert-info {
+    border-left: 4px solid #0077b5;
+}
+
+.badge-linkedin {
+    background-color: #0077b5;
+    color: white;
 }
 
 .json-content {
