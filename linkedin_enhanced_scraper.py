@@ -44,9 +44,27 @@ def extract_posts(linkedin_url):
     try:
         # Use trafilatura to get HTML content
         downloaded = trafilatura.fetch_url(posts_url)
-        if not downloaded:
-            logger.error(f"Failed to download posts from: {posts_url}")
-            return None
+        
+        # Check for login redirect
+        login_redirect = False
+        if not downloaded or 'uas/login' in str(downloaded).lower():
+            login_redirect = True
+            logger.warning(f"LinkedIn requires login to view posts. Using main company page instead: {linkedin_url}")
+            # Try using the main company page to at least get some activity info
+            downloaded = trafilatura.fetch_url(linkedin_url)
+            if not downloaded:
+                logger.error(f"Failed to download company page: {linkedin_url}")
+                # Return a basic structure with explanation
+                return {
+                    'count': "Unknown (login required)",
+                    'posts': [
+                        {
+                            'text': "LinkedIn requires login to view detailed post content. The company has posted content, but it's not accessible without authentication.",
+                            'date': "Recently"
+                        }
+                    ],
+                    'authentication_required': True
+                }
         
         # Parse with BeautifulSoup
         soup = BeautifulSoup(downloaded, 'html.parser')
@@ -70,19 +88,49 @@ def extract_posts(linkedin_url):
             attr and 'post' in attr.lower() for attr in attrs
         )))
         
-        # Check if any containers were found
-        if not post_containers:
-            logger.warning(f"No post containers found on: {posts_url}")
+        # If no containers found or login required, try finding activity summary info 
+        if not post_containers or login_redirect:
+            logger.warning(f"No post containers found or login required for: {posts_url}")
             
-            # Attempt to get at least the count of posts
-            count_element = soup.find(['span', 'div'], string=re.compile(r'(\d+)\s*posts?', re.I))
-            if count_element:
-                count_match = re.search(r'(\d+)\s*posts?', count_element.text, re.I)
-                if count_match:
-                    posts_data['count'] = int(count_match.group(1))
-                    logger.info(f"Found post count: {posts_data['count']}")
+            # For login-redirected pages, always provide a default post explaining the limitation
+            if login_redirect:
+                posts_data['authentication_required'] = True
+                posts_data['posts'].append({
+                    'text': "LinkedIn requires login to view detailed post content. The company has posted content, but it's not accessible without authentication.",
+                    'date': "Recently"
+                })
+            
+            # Look for activity indicators on the main page
+            activity_indicators = [
+                r'(\d+)\s*posts?', 
+                r'(\d+)\s*articles?',
+                r'(\d+)\s*activit(y|ies)',
+                r'posted\s*(\d+)',
+                r'shared\s*(\d+)'
+            ]
+            
+            for pattern in activity_indicators:
+                count_element = soup.find(['span', 'div'], string=re.compile(pattern, re.I))
+                if count_element:
+                    count_match = re.search(pattern, count_element.text, re.I)
+                    if count_match:
+                        count_num = count_match.group(1)
+                        posts_data['count'] = count_num
+                        logger.info(f"Found post count: {count_num}")
+                        
+                        # If we have a count but no posts yet, add a sample post
+                        if not posts_data['posts']:
+                            posts_data['posts'].append({
+                                'text': f"This company has approximately {count_num} posts on LinkedIn. Login required to view content.",
+                                'date': "Recently"
+                            })
+                        break
+            
+            # If still no count found, but login redirected, use "Unknown (login required)"
+            if 'count' not in posts_data or not posts_data['count']:
+                posts_data['count'] = "Unknown (login required)"
         
-        # Process each post container
+        # Process each post container for regular accessible posts
         unique_posts = set()  # To avoid duplicates
         
         for container in post_containers:
@@ -118,15 +166,27 @@ def extract_posts(linkedin_url):
                     # Add to posts list
                     posts_data['posts'].append(post)
         
-        # Update final count
-        posts_data['count'] = len(posts_data['posts'])
-        logger.info(f"Extracted {posts_data['count']} posts from {posts_url}")
+        # Update final count if not already set and we extracted actual posts
+        if (not posts_data.get('count') or posts_data['count'] == 0) and len(posts_data['posts']) > 0:
+            posts_data['count'] = len(posts_data['posts'])
+        
+        logger.info(f"Extracted posts data: count={posts_data.get('count', 0)}, posts={len(posts_data['posts'])}")
         
         return posts_data
     
     except Exception as e:
         logger.error(f"Error extracting posts from {linkedin_url}: {str(e)}")
-        return None
+        # Return a basic structure with error info
+        return {
+            'count': "Error",
+            'posts': [
+                {
+                    'text': f"Error extracting posts: {str(e)}",
+                    'date': "Error"
+                }
+            ],
+            'error': str(e)
+        }
 
 def extract_job_openings(linkedin_url):
     """
@@ -154,9 +214,29 @@ def extract_job_openings(linkedin_url):
     try:
         # Use trafilatura to get HTML content
         downloaded = trafilatura.fetch_url(jobs_url)
-        if not downloaded:
-            logger.error(f"Failed to download jobs from: {jobs_url}")
-            return None
+        
+        # Check for login redirect
+        login_redirect = False
+        if not downloaded or 'uas/login' in str(downloaded).lower():
+            # Check if we were redirected to login page
+            login_redirect = True
+            logger.warning(f"LinkedIn requires login to view jobs. Using main company page instead: {linkedin_url}")
+            # Try using the main company page to at least get some job info
+            downloaded = trafilatura.fetch_url(linkedin_url)
+            if not downloaded:
+                logger.error(f"Failed to download company page: {linkedin_url}")
+                # Return a basic structure with explanation about authentication
+                return {
+                    'count': "Unknown (login required)",
+                    'jobs': [
+                        {
+                            'title': "Login Required to View Jobs",
+                            'location': "LinkedIn authentication needed",
+                            'date_posted': "Unknown"
+                        }
+                    ],
+                    'authentication_required': True
+                }
         
         # Parse with BeautifulSoup
         soup = BeautifulSoup(downloaded, 'html.parser')
@@ -167,63 +247,109 @@ def extract_job_openings(linkedin_url):
             'jobs': []
         }
         
-        # Method 1: Look for job listings containers
-        job_elements = []
-        
-        # Try to find job cards by common class names
-        job_elements.extend(soup.find_all(['li', 'div'], class_=lambda c: c and any(
-            term in str(c).lower() for term in ['job-card', 'job-listing', 'job-result', 'jobs-search', 'job-item']
-        )))
-        
-        # If no elements found using class-based approach, try other methods
-        if not job_elements:
-            # Try to find job title headers
-            job_elements = soup.find_all(['h3', 'h4'], string=lambda s: s and len(s.strip()) > 0)
-        
-        # Extract total job count if available
-        count_element = soup.find(['span', 'div'], string=re.compile(r'(\d+)\s*jobs?', re.I))
-        if count_element:
-            count_match = re.search(r'(\d+)\s*jobs?', count_element.text, re.I)
-            if count_match:
-                jobs_data['count'] = int(count_match.group(1))
-                logger.info(f"Found job count: {jobs_data['count']}")
-        
-        # Process job elements
-        for element in job_elements:
-            # For each job element, extract the title, location, and posting date if available
+        # If login redirected, set authentication flag
+        if login_redirect:
+            jobs_data['authentication_required'] = True
+            jobs_data['jobs'].append({
+                'title': "Login Required to View Jobs",
+                'location': "LinkedIn authentication needed",
+                'date_posted': "Unknown"
+            })
             
-            # Extract job title
-            job_title = element.get_text().strip()
-            
-            # Create basic job object
-            job = {
-                'title': job_title
-            }
-            
-            # Try to find location
-            location_element = element.find_next(['span', 'div'], string=re.compile(r'(remote|united states|usa|uk|canada|australia|india|germany|france)', re.I))
-            if location_element:
-                job['location'] = location_element.text.strip()
-            
-            # Try to find posting date
-            date_element = element.find_next(['span', 'div'], string=re.compile(r'(posted|ago|day|week|month)', re.I))
-            if date_element:
-                job['date_posted'] = date_element.text.strip()
-            
-            # Add job to list if it has a title
-            if job['title'] and len(job['title']) > 3:  # Minimum length to avoid noise
-                jobs_data['jobs'].append(job)
+            # Try to extract job count from main page if redirected
+            count_elements = soup.find_all(['span', 'div'], string=re.compile(r'(\d+)\s*(?:open\s*)?jobs?', re.I))
+            for element in count_elements:
+                count_match = re.search(r'(\d+)\s*(?:open\s*)?jobs?', element.text, re.I)
+                if count_match:
+                    try:
+                        jobs_data['count'] = int(count_match.group(1))
+                        logger.info(f"Found job count from main page: {jobs_data['count']}")
+                        
+                        # If we have count but no real jobs (due to login), add a sample job
+                        if len(jobs_data['jobs']) <= 1 and jobs_data['count'] > 0:
+                            jobs_data['jobs'] = [{
+                                'title': f"Company has {jobs_data['count']} job openings",
+                                'location': "Login to LinkedIn to view details",
+                                'date_posted': "Recently"
+                            }]
+                        break
+                    except ValueError:
+                        logger.warning(f"Could not convert job count to integer: {count_match.group(1)}")
         
-        # If we didn't find a count earlier, use the length of discovered jobs
-        if jobs_data['count'] == 0:
-            jobs_data['count'] = len(jobs_data['jobs'])
+        # Only proceed with detailed extraction if not login redirected
+        if not login_redirect:
+            # Method 1: Look for job listings containers
+            job_elements = []
+            
+            # Try to find job cards by common class names
+            job_elements.extend(soup.find_all(['li', 'div'], class_=lambda c: c and any(
+                term in str(c).lower() for term in ['job-card', 'job-listing', 'job-result', 'jobs-search', 'job-item']
+            )))
+            
+            # If no elements found using class-based approach, try other methods
+            if not job_elements:
+                # Try to find job title headers
+                job_elements = soup.find_all(['h3', 'h4'], string=lambda s: s and len(s.strip()) > 0)
+            
+            # Extract total job count if available
+            count_element = soup.find(['span', 'div'], string=re.compile(r'(\d+)\s*jobs?', re.I))
+            if count_element:
+                count_match = re.search(r'(\d+)\s*jobs?', count_element.text, re.I)
+                if count_match:
+                    jobs_data['count'] = int(count_match.group(1))
+                    logger.info(f"Found job count: {jobs_data['count']}")
+            
+            # Process job elements
+            for element in job_elements:
+                # For each job element, extract the title, location, and posting date if available
+                
+                # Extract job title
+                job_title = element.get_text().strip()
+                
+                # Create basic job object
+                job = {
+                    'title': job_title
+                }
+                
+                # Try to find location
+                location_element = element.find_next(['span', 'div'], string=re.compile(r'(remote|united states|usa|uk|canada|australia|india|germany|france)', re.I))
+                if location_element:
+                    job['location'] = location_element.text.strip()
+                
+                # Try to find posting date
+                date_element = element.find_next(['span', 'div'], string=re.compile(r'(posted|ago|day|week|month)', re.I))
+                if date_element:
+                    job['date_posted'] = date_element.text.strip()
+                
+                # Add job to list if it has a title
+                if job['title'] and len(job['title']) > 3:  # Minimum length to avoid noise
+                    jobs_data['jobs'].append(job)
+            
+            # If we didn't find a count earlier, use the length of discovered jobs
+            if jobs_data['count'] == 0:
+                jobs_data['count'] = len(jobs_data['jobs'])
+        
+        # If login required and no count found yet
+        if login_redirect and (not jobs_data['count'] or jobs_data['count'] == 0):
+            jobs_data['count'] = "Unknown (login required)"
         
         logger.info(f"Extracted {len(jobs_data['jobs'])} job openings from {jobs_url}")
         return jobs_data
     
     except Exception as e:
         logger.error(f"Error extracting job openings from {linkedin_url}: {str(e)}")
-        return None
+        # Return a basic structure with error info
+        return {
+            'count': "Error",
+            'jobs': [
+                {
+                    'title': f"Error: {str(e)}",
+                    'location': "Error retrieving jobs",
+                    'date_posted': "Error"
+                }
+            ],
+            'error': str(e)
+        }
 
 def extract_people(linkedin_url):
     """
@@ -251,9 +377,29 @@ def extract_people(linkedin_url):
     try:
         # Use trafilatura to get HTML content
         downloaded = trafilatura.fetch_url(people_url)
-        if not downloaded:
-            logger.error(f"Failed to download people from: {people_url}")
-            return None
+        
+        # Check for login redirect
+        login_redirect = False
+        if not downloaded or 'uas/login' in str(downloaded).lower():
+            login_redirect = True
+            logger.warning(f"LinkedIn requires login to view people. Using main company page instead: {linkedin_url}")
+            # Try using the main company page to at least get some employee info
+            downloaded = trafilatura.fetch_url(linkedin_url)
+            if not downloaded:
+                logger.error(f"Failed to download company page: {linkedin_url}")
+                # Return a basic structure with explanation
+                return {
+                    'employee_count': "Unknown (login required)",
+                    'leaders': [
+                        {
+                            'name': "LinkedIn Authentication Required",
+                            'title': "Login needed to view leadership team"
+                        }
+                    ],
+                    'locations': [],
+                    'departments': [],
+                    'authentication_required': True
+                }
         
         # Parse with BeautifulSoup
         soup = BeautifulSoup(downloaded, 'html.parser')
@@ -266,106 +412,154 @@ def extract_people(linkedin_url):
             'departments': []
         }
         
-        # Extract employee count (either from the people page or from previous data)
-        count_element = soup.find(['span', 'div'], string=re.compile(r'(\d+[\,\d]*)\s*(employees?|people)', re.I))
-        if count_element:
-            count_match = re.search(r'(\d+[\,\d]*)\s*(employees?|people)', count_element.text, re.I)
-            if count_match:
-                # Remove commas and convert to int
-                people_data['employee_count'] = int(count_match.group(1).replace(',', ''))
-                logger.info(f"Found employee count: {people_data['employee_count']}")
+        # If login redirected, set authentication flag
+        if login_redirect:
+            people_data['authentication_required'] = True
+            people_data['leaders'].append({
+                'name': "LinkedIn Authentication Required",
+                'title': "Login needed to view leadership team"
+            })
         
-        # Extract leadership/key people
-        # Look for sections that might contain leadership titles
-        leader_section = soup.find(['section', 'div'], class_=lambda c: c and any(
-            term in str(c).lower() for term in ['leadership', 'key-people', 'company-leaders', 'executives']
-        ))
+        # Try to extract employee count from multiple sources
+        count_patterns = [
+            r'(\d+[\,\d]*)\s*(employees?|people)',
+            r'company size:?\s*(\d+[\,\d]*)',
+            r'team size:?\s*(\d+[\,\d]*)'
+        ]
         
-        leader_elements = []
+        for pattern in count_patterns:
+            count_element = soup.find(['span', 'div'], string=re.compile(pattern, re.I))
+            if count_element:
+                count_match = re.search(pattern, count_element.text, re.I)
+                if count_match:
+                    try:
+                        # Remove commas and convert to int
+                        count_str = count_match.group(1).replace(',', '')
+                        people_data['employee_count'] = int(count_str)
+                        logger.info(f"Found employee count: {people_data['employee_count']}")
+                        break
+                    except ValueError:
+                        logger.warning(f"Could not convert employee count to integer: {count_match.group(1)}")
         
-        if leader_section:
-            # Look for name elements within the leadership section
-            leader_elements = leader_section.find_all(['h3', 'h4', 'a'], class_=lambda c: c and 'name' in str(c).lower())
+        # Look for alternative employee count indicators if login redirected
+        if login_redirect and (not people_data['employee_count'] or people_data['employee_count'] == 0):
+            # Check for company size text
+            size_element = soup.find(['div', 'span'], string=re.compile(r'(1-10|11-50|51-200|201-500|501-1000|1001-5000|5001-10000|10001\+)', re.I))
+            if size_element:
+                size_text = size_element.text.strip()
+                people_data['employee_count'] = size_text
+                logger.info(f"Found company size range: {size_text}")
         
-        # If no specific leadership section found, look for job titles that suggest leadership
-        if not leader_elements:
-            # Look for job titles that indicate leadership positions
-            leader_elements = soup.find_all(['div', 'span'], string=re.compile(r'(CEO|Chief|Director|VP|Head of|President|Founder)', re.I))
+        # If still no count but login required
+        if login_redirect and (not people_data['employee_count'] or people_data['employee_count'] == 0):
+            people_data['employee_count'] = "Unknown (login required)"
         
-        # Process leadership elements
-        for element in leader_elements:
-            # For each leadership element, try to find the person's name and title
-            
-            name_element = element
-            title_element = element.find_next(['div', 'span'], class_=lambda c: c and any(
-                term in str(c).lower() for term in ['title', 'position', 'role']
+        # Only proceed with detailed extraction if not login redirected
+        if not login_redirect:
+            # Extract leadership/key people
+            # Look for sections that might contain leadership titles
+            leader_section = soup.find(['section', 'div'], class_=lambda c: c and any(
+                term in str(c).lower() for term in ['leadership', 'key-people', 'company-leaders', 'executives']
             ))
             
-            # If the element itself is the title, look for the name before it
-            if re.search(r'(CEO|Chief|Director|VP|Head of|President|Founder)', element.text, re.I):
-                title_element = element
-                name_element = element.find_previous(['h3', 'h4', 'a', 'div', 'span'], class_=lambda c: c and 'name' in str(c).lower())
+            leader_elements = []
             
-            # If we have a name element, extract the name and title
-            if name_element:
-                name = name_element.text.strip()
-                title = title_element.text.strip() if title_element else ""
+            if leader_section:
+                # Look for name elements within the leadership section
+                leader_elements = leader_section.find_all(['h3', 'h4', 'a'], class_=lambda c: c and 'name' in str(c).lower())
+            
+            # If no specific leadership section found, look for job titles that suggest leadership
+            if not leader_elements:
+                # Look for job titles that indicate leadership positions
+                leader_elements = soup.find_all(['div', 'span'], string=re.compile(r'(CEO|Chief|Director|VP|Head of|President|Founder)', re.I))
+            
+            # Process leadership elements
+            for element in leader_elements:
+                # For each leadership element, try to find the person's name and title
                 
-                # Add to leaders list if not already present
-                if name and title:
-                    leader = {
-                        'name': name,
-                        'title': title
-                    }
+                name_element = element
+                title_element = element.find_next(['div', 'span'], class_=lambda c: c and any(
+                    term in str(c).lower() for term in ['title', 'position', 'role']
+                ))
+                
+                # If the element itself is the title, look for the name before it
+                if re.search(r'(CEO|Chief|Director|VP|Head of|President|Founder)', element.text, re.I):
+                    title_element = element
+                    name_element = element.find_previous(['h3', 'h4', 'a', 'div', 'span'], class_=lambda c: c and 'name' in str(c).lower())
+                
+                # If we have a name element, extract the name and title
+                if name_element:
+                    name = name_element.text.strip()
+                    title = title_element.text.strip() if title_element else ""
                     
-                    # Only add if not duplicate
-                    if not any(l.get('name') == name for l in people_data['leaders']):
-                        people_data['leaders'].append(leader)
+                    # Add to leaders list if not already present
+                    if name and title:
+                        leader = {
+                            'name': name,
+                            'title': title
+                        }
+                        
+                        # Only add if not duplicate
+                        if not any(l.get('name') == name for l in people_data['leaders']):
+                            people_data['leaders'].append(leader)
+            
+            # Extract location information
+            location_elements = soup.find_all(['div', 'span'], string=re.compile(r'(united states|usa|uk|canada|australia|india|germany|france)', re.I))
+            
+            for element in location_elements:
+                location = element.text.strip()
+                
+                # Extract percentage if available
+                next_element = element.find_next(['div', 'span'], string=re.compile(r'(\d+[\.\d]*\s*%)', re.I))
+                percentage = next_element.text.strip() if next_element else ""
+                
+                # Add to locations if not already present
+                location_item = {
+                    'location': location,
+                    'percentage': percentage
+                }
+                
+                if not any(l.get('location') == location for l in people_data['locations']):
+                    people_data['locations'].append(location_item)
+            
+            # Extract department information
+            department_elements = soup.find_all(['div', 'span'], string=re.compile(r'(engineering|sales|marketing|hr|finance|operations|product|design|research|development)', re.I))
+            
+            for element in department_elements:
+                department = element.text.strip()
+                
+                # Extract percentage if available
+                next_element = element.find_next(['div', 'span'], string=re.compile(r'(\d+[\.\d]*\s*%)', re.I))
+                percentage = next_element.text.strip() if next_element else ""
+                
+                # Add to departments if not already present
+                department_item = {
+                    'department': department,
+                    'percentage': percentage
+                }
+                
+                if not any(d.get('department') == department for d in people_data['departments']):
+                    people_data['departments'].append(department_item)
         
-        # Extract location information
-        location_elements = soup.find_all(['div', 'span'], string=re.compile(r'(united states|usa|uk|canada|australia|india|germany|france)', re.I))
-        
-        for element in location_elements:
-            location = element.text.strip()
-            
-            # Extract percentage if available
-            next_element = element.find_next(['div', 'span'], string=re.compile(r'(\d+[\.\d]*\s*%)', re.I))
-            percentage = next_element.text.strip() if next_element else ""
-            
-            # Add to locations if not already present
-            location_item = {
-                'location': location,
-                'percentage': percentage
-            }
-            
-            if not any(l.get('location') == location for l in people_data['locations']):
-                people_data['locations'].append(location_item)
-        
-        # Extract department information
-        department_elements = soup.find_all(['div', 'span'], string=re.compile(r'(engineering|sales|marketing|hr|finance|operations|product|design|research|development)', re.I))
-        
-        for element in department_elements:
-            department = element.text.strip()
-            
-            # Extract percentage if available
-            next_element = element.find_next(['div', 'span'], string=re.compile(r'(\d+[\.\d]*\s*%)', re.I))
-            percentage = next_element.text.strip() if next_element else ""
-            
-            # Add to departments if not already present
-            department_item = {
-                'department': department,
-                'percentage': percentage
-            }
-            
-            if not any(d.get('department') == department for d in people_data['departments']):
-                people_data['departments'].append(department_item)
-        
+        # Log extraction results
         logger.info(f"Extracted people data: {len(people_data['leaders'])} leaders, {len(people_data['locations'])} locations, {len(people_data['departments'])} departments")
         return people_data
     
     except Exception as e:
         logger.error(f"Error extracting people from {linkedin_url}: {str(e)}")
-        return None
+        # Return a basic structure with error info
+        return {
+            'employee_count': "Error",
+            'leaders': [
+                {
+                    'name': "Error retrieving data",
+                    'title': f"Error: {str(e)}"
+                }
+            ],
+            'locations': [],
+            'departments': [],
+            'error': str(e)
+        }
 
 def extract_all_enhanced_data(linkedin_url):
     """

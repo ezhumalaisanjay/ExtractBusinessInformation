@@ -344,7 +344,33 @@
                             
                             <!-- POSTS TAB -->
                             <div class="tab-pane fade" id="posts-tab-pane" role="tabpanel" aria-labelledby="posts-tab" tabindex="0">
-                                {% if data.linkedin_data.post_count or data.linkedin_data.post_summaries %}
+                                {% if data.linkedin_data.posts and data.linkedin_data.posts.authentication_required %}
+                                    <!-- Authentication Required Message -->
+                                    <div class="alert alert-warning mb-3">
+                                        <i data-feather="lock" class="me-2"></i> LinkedIn requires authentication to view detailed post content.
+                                    </div>
+                                    
+                                    {% if data.linkedin_data.posts.count and data.linkedin_data.posts.count != "0" and data.linkedin_data.posts.count != 0 %}
+                                    <div class="alert alert-info">
+                                        <i data-feather="message-square" class="me-2"></i> {{ data.linkedin_data.posts.count }} posts published
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if data.linkedin_data.posts.posts %}
+                                    <h5 class="mt-3">Limited Post Information</h5>
+                                    <div class="list-group">
+                                        {% for post in data.linkedin_data.posts.posts %}
+                                        <div class="list-group-item">
+                                            <p class="mb-1">{{ post.text }}</p>
+                                            {% if post.date %}
+                                            <small class="text-muted">{{ post.date }}</small>
+                                            {% endif %}
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                
+                                {% elif data.linkedin_data.post_count or data.linkedin_data.post_summaries or data.linkedin_data.recent_posts %}
                                 <div class="mb-3">
                                     {% if data.linkedin_data.post_count %}
                                     <div class="alert alert-info">
@@ -401,7 +427,40 @@
                             
                             <!-- JOBS TAB -->
                             <div class="tab-pane fade" id="jobs-tab-pane" role="tabpanel" aria-labelledby="jobs-tab" tabindex="0">
-                                {% if data.linkedin_data.job_opening_count or data.linkedin_data.job_openings %}
+                                {% if data.linkedin_data.jobs and data.linkedin_data.jobs.authentication_required %}
+                                    <!-- Authentication Required Message for Jobs -->
+                                    <div class="alert alert-warning mb-3">
+                                        <i data-feather="lock" class="me-2"></i> LinkedIn requires authentication to view complete job information.
+                                    </div>
+                                    
+                                    {% if data.linkedin_data.jobs.count and data.linkedin_data.jobs.count != "0" and data.linkedin_data.jobs.count != 0 %}
+                                    <div class="alert alert-info">
+                                        <i data-feather="briefcase" class="me-2"></i> {{ data.linkedin_data.jobs.count }} job openings available
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if data.linkedin_data.jobs.jobs %}
+                                    <h5 class="mt-3">Limited Job Information</h5>
+                                    <div class="list-group">
+                                        {% for job in data.linkedin_data.jobs.jobs %}
+                                        <div class="list-group-item">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h6 class="mb-1">{{ job.title }}</h6>
+                                                {% if job.date_posted %}
+                                                <span class="badge bg-secondary">{{ job.date_posted }}</span>
+                                                {% endif %}
+                                            </div>
+                                            {% if job.location %}
+                                            <p class="mb-0 text-muted">
+                                                <i data-feather="map-pin" class="me-1"></i> {{ job.location }}
+                                            </p>
+                                            {% endif %}
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                
+                                {% elif data.linkedin_data.job_opening_count or data.linkedin_data.job_openings %}
                                 <div class="mb-3">
                                     {% if data.linkedin_data.job_opening_count %}
                                     <div class="alert alert-info">
@@ -439,7 +498,67 @@
                             
                             <!-- PEOPLE TAB -->
                             <div class="tab-pane fade" id="people-tab-pane" role="tabpanel" aria-labelledby="people-tab" tabindex="0">
-                                {% if data.linkedin_data.employee_count_from_people or data.linkedin_data.leadership_team or data.linkedin_data.departments or data.linkedin_data.employee_locations %}
+                                {% if data.linkedin_data.people and data.linkedin_data.people.authentication_required %}
+                                    <!-- Authentication Required Message for People -->
+                                    <div class="alert alert-warning mb-3">
+                                        <i data-feather="lock" class="me-2"></i> LinkedIn requires authentication to view complete employee information.
+                                    </div>
+                                    
+                                    {% if data.linkedin_data.people.employee_count and data.linkedin_data.people.employee_count != "0" and data.linkedin_data.people.employee_count != 0 %}
+                                    <div class="alert alert-info">
+                                        <i data-feather="users" class="me-2"></i> {{ data.linkedin_data.people.employee_count }} employees
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if data.linkedin_data.people.leaders %}
+                                    <h5 class="mt-3">Limited Leadership Information</h5>
+                                    <div class="list-group mb-3">
+                                        {% for leader in data.linkedin_data.people.leaders %}
+                                        <div class="list-group-item">
+                                            <h6 class="mb-1">{{ leader.name }}</h6>
+                                            {% if leader.title %}
+                                            <p class="mb-0 text-muted">{{ leader.title }}</p>
+                                            {% endif %}
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <div class="row">
+                                        {% if data.linkedin_data.people.departments %}
+                                        <div class="col-md-6 mb-3">
+                                            <h5>Departments</h5>
+                                            <div class="list-group">
+                                                {% for department in data.linkedin_data.people.departments %}
+                                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                    {{ department.department }}
+                                                    {% if department.percentage %}
+                                                    <span class="badge bg-primary">{{ department.percentage }}</span>
+                                                    {% endif %}
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                        
+                                        {% if data.linkedin_data.people.locations %}
+                                        <div class="col-md-6 mb-3">
+                                            <h5>Locations</h5>
+                                            <div class="list-group">
+                                                {% for location in data.linkedin_data.people.locations %}
+                                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                    {{ location.location }}
+                                                    {% if location.percentage %}
+                                                    <span class="badge bg-primary">{{ location.percentage }}</span>
+                                                    {% endif %}
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                
+                                {% elif data.linkedin_data.employee_count_from_people or data.linkedin_data.leadership_team or data.linkedin_data.departments or data.linkedin_data.employee_locations %}
                                 <div class="mb-3">
                                     {% if data.linkedin_data.employee_count_from_people %}
                                     <div class="alert alert-info">

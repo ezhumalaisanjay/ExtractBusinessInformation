@@ -686,6 +686,21 @@ def extract_linkedin_company_info(soup, url, text):
             logger.info(f"Adding enhanced LinkedIn data extraction for: {url}")
             enhanced_data = extract_all_enhanced_data(url)
             
+            # Store the complete raw data for each category to enable better template handling
+            if 'posts' in enhanced_data:
+                # Store the complete posts data structure (including authentication_required flag)
+                linkedin_info['posts'] = enhanced_data['posts']
+            
+            if 'jobs' in enhanced_data:
+                # Store the complete jobs data structure
+                linkedin_info['jobs'] = enhanced_data['jobs']
+            
+            if 'people' in enhanced_data:
+                # Store the complete people data structure
+                linkedin_info['people'] = enhanced_data['people']
+            
+            # Also maintain the legacy structure for backward compatibility
+            
             # Add posts data if available
             if 'posts' in enhanced_data:
                 posts_data = enhanced_data['posts']
@@ -743,6 +758,7 @@ def extract_linkedin_company_info(soup, url, text):
             
             # Log the enhanced data fields that were added
             enhanced_fields = [key for key in linkedin_info.keys() if key in [
+                'posts', 'jobs', 'people',
                 'post_count', 'recent_posts', 'post_summaries', 
                 'job_opening_count', 'job_openings', 
                 'leadership_team', 'employee_locations', 'departments'
