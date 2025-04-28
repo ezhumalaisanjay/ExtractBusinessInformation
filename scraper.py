@@ -679,6 +679,82 @@ def extract_linkedin_company_info(soup, url, text):
             elif any(keyword in section_title for keyword in ['highlight', 'achievement', 'accomplishment']):
                 linkedin_info['highlights'] = section_content
     
+    # Enhanced data extraction: posts, job openings, and people
+    try:
+        # Only proceed with enhanced extraction if this is a LinkedIn company URL
+        if 'linkedin.com/company/' in url:
+            logger.info(f"Adding enhanced LinkedIn data extraction for: {url}")
+            enhanced_data = extract_all_enhanced_data(url)
+            
+            # Add posts data if available
+            if 'posts' in enhanced_data:
+                posts_data = enhanced_data['posts']
+                
+                if 'count' in posts_data:
+                    linkedin_info['post_count'] = posts_data['count']
+                
+                if 'posts' in posts_data and posts_data['posts']:
+                    # Limit to top 5 posts
+                    posts = posts_data['posts'][:5]
+                    linkedin_info['recent_posts'] = posts
+                    
+                    # Also create a brief summary of recent posts
+                    post_summaries = []
+                    for post in posts:
+                        if 'text' in post:
+                            post_text = post['text']
+                            # Create a brief summary (first 100 chars)
+                            summary = post_text[:100] + ('...' if len(post_text) > 100 else '')
+                            date = post.get('date', 'Recently')
+                            reactions = post.get('reactions', 'Unknown')
+                            post_summary = f"{summary} ({date}, {reactions} reactions)"
+                            post_summaries.append(post_summary)
+                    
+                    if post_summaries:
+                        linkedin_info['post_summaries'] = post_summaries
+            
+            # Add job openings data if available
+            if 'jobs' in enhanced_data:
+                jobs_data = enhanced_data['jobs']
+                
+                if 'count' in jobs_data:
+                    linkedin_info['job_opening_count'] = jobs_data['count']
+                
+                if 'jobs' in jobs_data and jobs_data['jobs']:
+                    # Limit to top 5 job openings
+                    jobs = jobs_data['jobs'][:5]
+                    linkedin_info['job_openings'] = jobs
+            
+            # Add people data if available
+            if 'people' in enhanced_data:
+                people_data = enhanced_data['people']
+                
+                if 'employee_count' in people_data:
+                    linkedin_info['employee_count_from_people'] = people_data['employee_count']
+                
+                if 'leaders' in people_data and people_data['leaders']:
+                    linkedin_info['leadership_team'] = people_data['leaders']
+                
+                if 'locations' in people_data and people_data['locations']:
+                    linkedin_info['employee_locations'] = people_data['locations']
+                
+                if 'departments' in people_data and people_data['departments']:
+                    linkedin_info['departments'] = people_data['departments']
+            
+            # Log the enhanced data fields that were added
+            enhanced_fields = [key for key in linkedin_info.keys() if key in [
+                'post_count', 'recent_posts', 'post_summaries', 
+                'job_opening_count', 'job_openings', 
+                'leadership_team', 'employee_locations', 'departments'
+            ]]
+            
+            if enhanced_fields:
+                logger.info(f"Added enhanced LinkedIn data: {', '.join(enhanced_fields)}")
+    
+    except Exception as e:
+        logger.error(f"Error extracting enhanced LinkedIn data: {str(e)}")
+        # Continue with basic data even if enhanced extraction fails
+    
     logger.info(f"Extracted LinkedIn data: {', '.join(linkedin_info.keys())}")
     return linkedin_info
 
