@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Website Scraper</title>
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i data-feather="search"></i> Business Scraper
+            </a>
+        </div>
+    </nav>
+
+    <main class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Extract Business Information</h3>
+                    </div>
+                    <div class="card-body">
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category, message in messages %}
+                                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+
+                        <p class="lead mb-4">Enter a business website URL to extract company information, contact details, services, and products.</p>
+                        
+                        <form action="{{ url_for('scrape') }}" method="POST">
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" name="url" placeholder="https://example.com" required>
+                                <button class="btn btn-primary" type="submit">
+                                    <i data-feather="search"></i> Scrape
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card-footer">
+                        <div class="small text-muted">
+                            <i data-feather="info" class="feather-sm"></i> 
+                            Tip: For best results, use the company's homepage URL
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h4>API Usage</h4>
+                    </div>
+                    <div class="card-body">
+                        <p>You can also use our API endpoint to extract business information programmatically:</p>
+                        <pre><code>POST /api/scrape
+Content-Type: application/json
+
+{
+  "url": "https://example.com"
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container text-center">
+            <p>&copy; 2023 Business Scraper | Extracts structured business information from websites</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

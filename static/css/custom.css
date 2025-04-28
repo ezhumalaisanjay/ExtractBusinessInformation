@@ -1,0 +1,60 @@
+/* Custom styling for the application */
+
+.feather-sm {
+    width: 16px;
+    height: 16px;
+}
+
+.json-content {
+    max-height: 400px;
+    overflow-y: auto;
+    background-color: var(--bs-dark);
+    padding: 15px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+}
+
+/* Code block styling */
+pre {
+    background-color: var(--bs-dark);
+    border-radius: 4px;
+    padding: 15px;
+    overflow-x: auto;
+}
+
+code {
+    font-family: 'Courier New', Courier, monospace;
+    color: var(--bs-light);
+}
+
+/* Make feather icons align with text */
+.feather {
+    vertical-align: text-bottom;
+}
+
+/* Alert styling with icons */
+.alert i {
+    margin-right: 8px;
+}
+
+/* Card hover effect */
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Badges styling */
+.badge {
+    font-weight: normal;
+    padding: 0.5em 0.8em;
+}
+
+/* List items styling */
+.list-group-item {
+    background-color: var(--bs-dark);
+    border-color: var(--bs-gray-800);
+}
