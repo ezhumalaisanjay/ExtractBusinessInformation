@@ -14,6 +14,16 @@
             <a class="navbar-brand" href="/">
                 <i data-feather="search"></i> Business Scraper
             </a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">Single URL</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/batch">Batch Process</a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
 
@@ -130,6 +140,24 @@ Content-Type: application/json
 {
   "url": "https://example.com"  // Returns only the LinkedIn URL without scraping it
 }</code></pre>
+
+                        <h5 class="mt-3">Batch Processing</h5>
+                        <pre><code>POST /api/batch
+Content-Type: application/json
+
+{
+  "urls": [
+    "https://example1.com",
+    "https://example2.com",
+    "https://example3.com"
+  ],
+  "mode": "find_linkedin"  // Options: "find_linkedin", "linkedin_only", "direct"
+}</code></pre>
+                        <div class="mt-2">
+                            <a href="/batch" class="btn btn-sm btn-primary">
+                                <i data-feather="layers"></i> Try Batch Processing
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>

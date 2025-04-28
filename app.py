@@ -17,6 +17,11 @@ def index():
     """Render the main page with URL input form"""
     return render_template('index.html')
 
+@app.route('/batch', methods=['GET'])
+def batch():
+    """Render the batch processing page"""
+    return render_template('batch.html')
+
 @app.route('/scrape', methods=['POST'])
 def scrape():
     """Handle website scraping requests"""
@@ -176,6 +181,115 @@ def api_find_linkedin():
             'success': False,
             'error': str(e)
         }), 500
+
+@app.route('/api/batch', methods=['POST'])
+def api_batch_process():
+    """API endpoint for batch processing multiple URLs"""
+    data = request.get_json()
+    
+    if not data or 'urls' not in data:
+        return jsonify({
+            'success': False,
+            'error': 'URLs parameter is required as an array'
+        }), 400
+    
+    urls = data['urls']
+    mode = data.get('mode', 'find_linkedin')  # Default to find_linkedin mode
+    
+    if not isinstance(urls, list):
+        return jsonify({
+            'success': False,
+            'error': 'URLs must be provided as an array'
+        }), 400
+    
+    if len(urls) > 20:
+        return jsonify({
+            'success': False,
+            'error': 'Maximum 20 URLs allowed in batch mode'
+        }), 400
+    
+    results = []
+    
+    for url in urls:
+        try:
+            # Add http:// prefix if not present
+            if not url.startswith(('http://', 'https://')):
+                url = 'https://' + url
+            
+            # Process based on mode
+            if mode == 'find_linkedin':
+                # Find LinkedIn URL and extract data
+                result = find_and_extract_linkedin_about(url)
+                
+                if result["success"]:
+                    results.append({
+                        'success': True,
+                        'website_url': url,
+                        'linkedin_url': result["linkedin_url"],
+                        'company_data': result["company_data"]
+                    })
+                else:
+                    results.append({
+                        'success': False,
+                        'website_url': url,
+                        'error': result["message"]
+                    })
+            
+            elif mode == 'linkedin_only':
+                # Just find LinkedIn URLs without extracting data
+                linkedin_url = extract_linkedin_url(url)
+                
+                if linkedin_url:
+                    results.append({
+                        'success': True,
+                        'website_url': url,
+                        'linkedin_url': linkedin_url
+                    })
+                else:
+                    results.append({
+                        'success': False,
+                        'website_url': url,
+                        'error': 'No LinkedIn URL found'
+                    })
+            
+            elif mode == 'direct':
+                # Direct scraping of URLs (could be LinkedIn or any website)
+                data = scrape_website(url)
+                
+                if data:
+                    results.append({
+                        'success': True,
+                        'url': url,
+                        'data': data
+                    })
+                else:
+                    results.append({
+                        'success': False,
+                        'url': url,
+                        'error': 'Failed to extract data'
+                    })
+            
+            else:
+                return jsonify({
+                    'success': False,
+                    'error': f'Invalid mode: {mode}. Use "find_linkedin", "linkedin_only", or "direct".'
+                }), 400
+                
+        except Exception as e:
+            logger.error(f"Batch processing error for URL {url}: {str(e)}")
+            results.append({
+                'success': False,
+                'url': url,
+                'error': str(e)
+            })
+    
+    return jsonify({
+        'success': True,
+        'results': results,
+        'total': len(urls),
+        'successful': sum(1 for r in results if r.get('success', False)),
+        'failed': sum(1 for r in results if not r.get('success', False))
+    })
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
