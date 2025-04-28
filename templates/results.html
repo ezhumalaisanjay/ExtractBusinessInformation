@@ -210,6 +210,30 @@
                         </div>
                         {% endif %}
                         
+                        {% if data.linkedin_data.specialties %}
+                        <div class="mb-3">
+                            <h5>Specialties</h5>
+                            <div class="d-flex flex-wrap gap-2 mb-2">
+                                {% for specialty in data.linkedin_data.specialties %}
+                                    <span class="badge bg-secondary">{{ specialty }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if data.linkedin_data.milestones %}
+                        <div class="mb-3">
+                            <h5>Company Milestones</h5>
+                            <div class="list-group">
+                                {% for milestone in data.linkedin_data.milestones %}
+                                    <div class="list-group-item">
+                                        <strong><i data-feather="flag" class="me-1"></i> {{ milestone }}</strong>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
                         {% if data.linkedin_data.all_about_sections %}
                         <div class="mb-3">
                             <h5>Additional About Details</h5>
@@ -262,6 +286,21 @@
                                     <div class="card-body text-center">
                                         <h5 class="card-title"><i data-feather="user-plus"></i> Company Size</h5>
                                         <p class="h3">{{ data.linkedin_data.company_size }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if data.linkedin_data.business_categories %}
+                            <div class="col-md-12 mb-3">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><i data-feather="tag"></i> Business Categories</h5>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            {% for category in data.linkedin_data.business_categories %}
+                                                <span class="badge bg-primary">{{ category }}</span>
+                                            {% endfor %}
+                                        </div>
                                     </div>
                                 </div>
                             </div>

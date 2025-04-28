@@ -340,6 +340,103 @@ def extract_linkedin_company_info(soup, url, text):
     # Extract all company overview/description data with enhanced detection
     about_sections = []
     
+    # New Method: Look for the "Overview" section specific to LinkedIn company pages
+    # This targets the format shown in the user's screenshot
+    overview_heading = soup.find(['h1', 'h2', 'h3'], string=lambda s: s and 'Overview' in s)
+    if overview_heading:
+        logger.info(f"Found LinkedIn 'Overview' heading - extracting company profile data: {overview_heading.text}")
+        
+        # Add specific extraction for Sixty One Steps format shown in screenshot
+        # Look for lines like "SME Focused - Boutique Agency"
+        parent_text = ""
+        parent = overview_heading.parent
+        if parent:
+            parent_text = parent.text
+            
+        # Look for business category patterns like "SME Focused - Boutique Agency"
+        category_patterns = [
+            r'((?:SME|B2B|B2C|Enterprise)\s+(?:Focused|Specialized|Oriented|Centric))(?:\s*[:-]\s*|\s+)([A-Za-z0-9 &]+)',
+            r'([A-Za-z]+\s+Agency|[A-Za-z]+\s+Service|[A-Za-z]+\s+Consultancy)(?:\s*[:-]\s*|\s+)([A-Za-z0-9 &]+)',
+            r'(Select\s+[A-Za-z]+\s+[A-Za-z]+)(?:\s*[:-]\s*|\s+)([A-Za-z0-9 &]+)'
+        ]
+        
+        for pattern in category_patterns:
+            category_matches = re.findall(pattern, parent_text, re.I)
+            if category_matches:
+                categories = []
+                for match in category_matches:
+                    if len(match) >= 2:
+                        full_match = f"{match[0]} - {match[1]}"
+                        categories.append(full_match.strip())
+                
+                if categories:
+                    linkedin_info['business_categories'] = categories
+                    logger.info(f"Extracted LinkedIn business categories: {', '.join(categories)}")
+        
+        # Method A: Extract from the heading's parent section
+        # Try to get all paragraphs that follow the Overview heading
+        parent = overview_heading.parent
+        while parent and parent.name not in ['section', 'div', 'main', 'article']:
+            parent = parent.parent
+            
+        if parent:
+            # Extract all paragraphs within this section
+            overview_paragraphs = parent.find_all(['p', 'div'], recursive=True)
+            overview_text = []
+            for p in overview_paragraphs:
+                p_text = p.text.strip()
+                # Only include paragraphs with real content, avoid navigation elements
+                if len(p_text) > 30 and not any(skip in p_text.lower() for skip in ['show more', 'read more', 'see all', 'follow']):
+                    overview_text.append(p_text)
+            
+            if overview_text:
+                full_overview = "\n\n".join(overview_text)
+                about_sections.append(full_overview)
+                logger.info(f"Extracted {len(overview_text)} paragraphs from LinkedIn Overview section")
+        
+        # Method B: Look for specific content divisions after the Overview heading
+        # This targets the specific layout in the screenshot
+        next_sibling = overview_heading.find_next_sibling()
+        if next_sibling:
+            sibling_text = next_sibling.text.strip()
+            if len(sibling_text) > 100:  # Long enough to be company description
+                about_sections.append(sibling_text)
+                logger.info("Extracted LinkedIn overview text from sibling element")
+            
+            # Try to find all paragraphs
+            sibling_paragraphs = next_sibling.find_all(['p', 'div'])
+            if sibling_paragraphs:
+                overview_text = []
+                for p in sibling_paragraphs:
+                    p_text = p.text.strip()
+                    if len(p_text) > 30:
+                        overview_text.append(p_text)
+                
+                if overview_text:
+                    full_overview = "\n\n".join(overview_text)
+                    about_sections.append(full_overview)
+                    logger.info(f"Extracted {len(overview_text)} paragraphs from sibling of Overview heading")
+        
+        # Method C: Extract the entire text block for overview sections
+        # Common in LinkedIn layout where they have blocks of descriptive text
+        # This looks for text blocks directly visible in the page as shown in screenshot
+        overview_parent = overview_heading.parent
+        overview_grandparent = overview_parent.parent if overview_parent else None
+        
+        if overview_grandparent:
+            # Find all direct text blocks and paragraphs in the overview section
+            all_blocks = []
+            for child in overview_grandparent.children:
+                if child.name and child.name not in ['h1', 'h2', 'h3', 'h4']:  # Skip headings
+                    block_text = child.text.strip()
+                    if len(block_text) > 50:  # Skip short elements
+                        all_blocks.append(block_text)
+            
+            if all_blocks:
+                block_text = "\n\n".join(all_blocks)
+                about_sections.append(block_text)
+                logger.info(f"Extracted {len(all_blocks)} text blocks from LinkedIn Overview section")
+    
     # Method 1: Try standard about section by class
     about_section = soup.find('section', class_=lambda c: c and 'artdeco-card' in c and ('about-us' in c or 'about-section' in c))
     if about_section:
@@ -593,17 +690,53 @@ def scrape_website(url):
         parsed_url = urlparse(url)
         domain_name = parsed_url.netloc
         
-        # Use trafilatura to get clean text
-        downloaded = trafilatura.fetch_url(url)
-        if not downloaded:
-            logger.error(f"Failed to download URL: {url}")
-            return None
+        # Enhanced LinkedIn detection for more robust handling
+        is_linkedin = 'linkedin.com' in url.lower()
         
-        # Extract clean text for analysis
-        clean_content = trafilatura.extract(downloaded)
-        if not clean_content:
-            logger.error(f"Failed to extract content from URL: {url}")
-            return None
+        try:
+            # Use trafilatura to get clean text
+            downloaded = trafilatura.fetch_url(url)
+            if not downloaded:
+                logger.error(f"Failed to download URL: {url}")
+                # If LinkedIn page but download failed, provide a specific message
+                if is_linkedin:
+                    return {
+                        'company_name': "LinkedIn Data Extraction Limited",
+                        'description': "LinkedIn restricts automated data extraction. For best results, try accessing LinkedIn company pages directly and copy the information manually.",
+                        'linkedin_data': {
+                            'overview': "LinkedIn has protection mechanisms against automated scraping. For comprehensive company data from LinkedIn, you may need to access it manually."
+                        }
+                    }
+                return None
+            
+            # Extract clean text for analysis
+            clean_content = trafilatura.extract(downloaded)
+            if not clean_content:
+                logger.error(f"Failed to extract content from URL: {url}")
+                # LinkedIn-specific handling for content extraction failures
+                if is_linkedin:
+                    return {
+                        'company_name': "LinkedIn Content Extraction Limited",
+                        'description': "LinkedIn content extraction was limited. For better results, try accessing LinkedIn company pages directly and copy the information manually.",
+                        'linkedin_data': {
+                            'overview': "LinkedIn has enhanced their protection against automated data extraction. For best results with company data from LinkedIn, consider accessing pages manually."
+                        }
+                    }
+                return None
+                
+        except Exception as download_error:
+            logger.error(f"Error during download/extraction: {str(download_error)}")
+            # Special handling for LinkedIn URLs
+            if is_linkedin:
+                return {
+                    'company_name': "LinkedIn Access Limited",
+                    'description': "LinkedIn restricts automated access. For better results, try accessing LinkedIn pages directly.",
+                    'linkedin_data': {
+                        'overview': "LinkedIn has implemented measures to prevent automated scraping. For access to company information, visit LinkedIn directly."
+                    }
+                }
+            # Re-raise for other URLs
+            raise
         
         # Use BeautifulSoup for structured parsing
         headers = {
