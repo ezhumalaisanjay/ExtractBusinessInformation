@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 import json
 from urllib.parse import urlparse
 from html.parser import HTMLParser
+from linkedin_enhanced_scraper import extract_all_enhanced_data
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
