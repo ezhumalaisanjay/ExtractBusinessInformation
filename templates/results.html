@@ -294,6 +294,52 @@
                                     </div>
                                 </div>
                                 {% endif %}
+                                
+                                {% if data.linkedin_data.website %}
+                                <div class="mb-3">
+                                    <h5>Website</h5>
+                                    <p><a href="{{ data.linkedin_data.website }}" target="_blank">{{ data.linkedin_data.website }}</a></p>
+                                </div>
+                                {% endif %}
+                                
+                                <div class="row">
+                                    {% if data.linkedin_data.follower_count %}
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card bg-light">
+                                            <div class="card-body text-center">
+                                                <h5 class="card-title"><i data-feather="users"></i> Followers</h5>
+                                                <p class="h3">{{ data.linkedin_data.follower_count }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if data.linkedin_data.company_size %}
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card bg-light">
+                                            <div class="card-body text-center">
+                                                <h5 class="card-title"><i data-feather="user-plus"></i> Company Size</h5>
+                                                <p class="h3">{{ data.linkedin_data.company_size }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if data.linkedin_data.business_categories %}
+                                    <div class="col-md-12 mb-3">
+                                        <div class="card bg-light">
+                                            <div class="card-body">
+                                                <h5 class="card-title"><i data-feather="tag"></i> Business Categories</h5>
+                                                <div class="d-flex flex-wrap gap-2">
+                                                    {% for category in data.linkedin_data.business_categories %}
+                                                        <span class="badge bg-primary">{{ category }}</span>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
                             </div>
                             
                             <!-- POSTS TAB -->
@@ -455,55 +501,6 @@
                                 </div>
                                 {% endif %}
                             </div>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-                        
-                        {% if data.linkedin_data.website %}
-                        <div class="mb-3">
-                            <h5>Website</h5>
-                            <p><a href="{{ data.linkedin_data.website }}" target="_blank">{{ data.linkedin_data.website }}</a></p>
-                        </div>
-                        {% endif %}
-                        
-                        <div class="row">
-                            {% if data.linkedin_data.follower_count %}
-                            <div class="col-md-6 mb-3">
-                                <div class="card bg-light">
-                                    <div class="card-body text-center">
-                                        <h5 class="card-title"><i data-feather="users"></i> Followers</h5>
-                                        <p class="h3">{{ data.linkedin_data.follower_count }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endif %}
-                            
-                            {% if data.linkedin_data.company_size %}
-                            <div class="col-md-6 mb-3">
-                                <div class="card bg-light">
-                                    <div class="card-body text-center">
-                                        <h5 class="card-title"><i data-feather="user-plus"></i> Company Size</h5>
-                                        <p class="h3">{{ data.linkedin_data.company_size }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endif %}
-                            
-                            {% if data.linkedin_data.business_categories %}
-                            <div class="col-md-12 mb-3">
-                                <div class="card bg-light">
-                                    <div class="card-body">
-                                        <h5 class="card-title"><i data-feather="tag"></i> Business Categories</h5>
-                                        <div class="d-flex flex-wrap gap-2">
-                                            {% for category in data.linkedin_data.business_categories %}
-                                                <span class="badge bg-primary">{{ category }}</span>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endif %}
                         </div>
                     </div>
                 </div>
