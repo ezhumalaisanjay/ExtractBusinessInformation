@@ -2,6 +2,35 @@
 document.addEventListener('DOMContentLoaded', function() {
     feather.replace();
     
+    // Handle mode selection for LinkedIn finder
+    const directModeRadio = document.getElementById('mode-direct');
+    const linkedinModeRadio = document.getElementById('mode-find-linkedin');
+    const directModeDesc = document.getElementById('direct-mode-desc');
+    const linkedinModeDesc = document.getElementById('linkedin-mode-desc');
+    const urlInput = document.querySelector('input[name="url"]');
+    
+    if (directModeRadio && linkedinModeRadio) {
+        // Function to update placeholder text based on selected mode
+        function updatePlaceholder() {
+            if (directModeRadio.checked) {
+                urlInput.placeholder = "https://example.com or linkedin.com/company/microsoft";
+                directModeDesc.style.display = 'block';
+                linkedinModeDesc.style.display = 'none';
+            } else {
+                urlInput.placeholder = "Enter company website URL (e.g., https://microsoft.com)";
+                directModeDesc.style.display = 'none';
+                linkedinModeDesc.style.display = 'block';
+            }
+        }
+        
+        // Set initial state
+        updatePlaceholder();
+        
+        // Add event listeners for radio buttons
+        directModeRadio.addEventListener('change', updatePlaceholder);
+        linkedinModeRadio.addEventListener('change', updatePlaceholder);
+    }
+    
     // Copy JSON data to clipboard
     const copyJsonBtn = document.getElementById('copyJson');
     if (copyJsonBtn) {
