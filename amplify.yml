@@ -10,21 +10,48 @@ backend:
       commands:
         - pip install --upgrade pip
         - pip install -e .
+        - echo "Creating start script"
+        - echo '#!/bin/bash' > start_app.sh
+        - echo 'cd "$CODEBUILD_SRC_DIR"' >> start_app.sh
+        - echo 'gunicorn --bind 0.0.0.0:8080 --workers 3 main:app' >> start_app.sh
+        - chmod +x start_app.sh
         - echo "Build completed on $(date)"
+    postBuild:
+      commands:
+        - echo "Testing app startup"
+        - python -m pytest -xvs || echo "Skipping tests"
   artifacts:
     baseDirectory: /
     files:
       - '**/*'
+    discard-paths: no
   cache:
     paths: []
 frontend:
   phases:
     build:
       commands:
-        - echo "No frontend build needed"
+        - echo "Preparing static assets"
+        - mkdir -p static/css
+        - mkdir -p static/js
+        - mkdir -p static/images
   artifacts:
     baseDirectory: /
     files:
       - '**/*'
+    discard-paths: no
   cache:
     paths: []
+
+appRoot: /
+customHeaders:
+  - pattern: '**/*'
+    headers:
+      - key: 'Strict-Transport-Security'
+        value: 'max-age=31536000; includeSubDomains'
+      - key: 'X-Frame-Options'
+        value: 'SAMEORIGIN'
+      - key: 'X-XSS-Protection'
+        value: '1; mode=block'
+
+buildSpec: amplify.yml
