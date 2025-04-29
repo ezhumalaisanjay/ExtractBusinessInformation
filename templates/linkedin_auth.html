@@ -88,6 +88,23 @@
                                     <h5><i data-feather="alert-circle" class="me-2"></i> Authentication Error</h5>
                                     <p>{{ auth_error }}</p>
                                 </div>
+                                
+                                <div class="alert alert-warning">
+                                    <h6><i data-feather="alert-triangle" class="me-2"></i> LinkedIn Security Limitations</h6>
+                                    <p>LinkedIn has strict security measures that may block automated login attempts. Some common reasons for authentication failures:</p>
+                                    <ul>
+                                        <li><strong>Security Checkpoints:</strong> LinkedIn may require additional verification</li>
+                                        <li><strong>CAPTCHA Requirements:</strong> LinkedIn may require CAPTCHA verification which can't be automated</li>
+                                        <li><strong>Rate Limiting:</strong> Too many login attempts in a short period</li>
+                                        <li><strong>IP-based Restrictions:</strong> LinkedIn may block certain IP ranges for security</li>
+                                    </ul>
+                                    <p class="mb-0">For best results:</p>
+                                    <ol>
+                                        <li>Manually log in to LinkedIn.com in another tab first to pass any security checks</li>
+                                        <li>Try again after a few minutes if you receive rate limiting messages</li>
+                                        <li>Use the scraper without authentication - many features still work in unauthenticated mode</li>
+                                    </ol>
+                                </div>
                             {% endif %}
                             
                             <form action="{{ url_for('linkedin_auth_page') }}" method="POST">

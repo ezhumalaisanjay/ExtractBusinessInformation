@@ -126,13 +126,23 @@ def authenticate():
             
             return True
         else:
-            # Check for two-factor authentication
+            # Check for various authentication issues
             if 'two-step-verification' in login_response.url:
-                auth_state['error'] = "Two-factor authentication required"
+                auth_state['error'] = "LinkedIn requires two-factor authentication - this is not currently supported"
                 logger.warning("LinkedIn requires two-factor authentication")
+            elif 'checkpoint' in login_response.url and 'challenge' in login_response.url:
+                auth_state['error'] = "LinkedIn security checkpoint detected - please log in manually on LinkedIn.com first"
+                logger.warning("LinkedIn security checkpoint detected")
+            elif 'captcha' in login_response.url.lower() or 'captcha' in login_response.text.lower():
+                auth_state['error'] = "LinkedIn is requiring CAPTCHA verification - please log in manually on LinkedIn.com first"
+                logger.warning("LinkedIn CAPTCHA verification required")
+            elif 'rate' in login_response.url.lower() or 'limit' in login_response.url.lower():
+                auth_state['error'] = "LinkedIn rate limiting detected - please try again later"
+                logger.warning("LinkedIn rate limiting detected")
             else:
-                auth_state['error'] = "Authentication failed (incorrect credentials)"
-                logger.warning("LinkedIn authentication failed - incorrect credentials or login blocked")
+                # Debug response for troubleshooting
+                logger.warning(f"LinkedIn authentication failed - unexpected response URL: {login_response.url}")
+                auth_state['error'] = "LinkedIn authentication failed - LinkedIn may be blocking automated logins for security"
             
             auth_state['logged_in'] = False
             # Clear password from memory after failed login
