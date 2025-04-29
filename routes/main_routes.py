@@ -17,11 +17,23 @@ def index():
     """Render the main landing page"""
     return render_template('index.html', redirect_url=request.args.get('redirect', '/'))
 
-@main_bp.route('/scrape/', methods=['GET'])
-@main_bp.route('/scrape', methods=['GET'])
+@main_bp.route('/scrape/', methods=['GET', 'POST'])
+@main_bp.route('/scrape', methods=['GET', 'POST'])
 def scrape_form():
-    """Render the scraping form page"""
-    return render_template('linkedin_form.html')
+    """Handle both form display and submission"""
+    if request.method == 'GET':
+        return render_template('linkedin_form.html')
+    else:
+        url = request.form.get('url')
+        if not url:
+            flash('Please enter a URL', 'error')
+            return redirect(url_for('main.scrape_form'))
+        try:
+            # Process the URL here
+            return render_template('results.html', url=url)
+        except Exception as e:
+            flash(str(e), 'error')
+            return redirect(url_for('main.scrape_form'))
 
 @main_bp.route('/extract')
 def extract_data():
