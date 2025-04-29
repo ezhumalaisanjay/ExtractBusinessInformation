@@ -14,19 +14,6 @@
             <a class="navbar-brand" href="/">
                 <i data-feather="search"></i> Business Scraper
             </a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/">Single URL</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/batch">Batch Process</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/linkedin-auth">LinkedIn Auth</a>
-                    </li>
-                </ul>
-            </div>
         </div>
     </nav>
 
@@ -35,46 +22,14 @@
             <div class="col-12 mb-4">
                 <div class="d-flex justify-content-between align-items-center">
                     <h1>Scraping Results</h1>
-                    <div>
-                        {% if data.authentication_required or data.linkedin_data and data.linkedin_data.authentication_required %}
-                            <a href="/linkedin-auth" class="btn btn-info me-2">
-                                <i data-feather="lock"></i> Login to LinkedIn
-                            </a>
-                        {% endif %}
-                        <a href="/" class="btn btn-secondary">
-                            <i data-feather="arrow-left"></i> New Search
-                        </a>
-                    </div>
+                    <a href="/" class="btn btn-secondary">
+                        <i data-feather="arrow-left"></i> New Search
+                    </a>
                 </div>
                 {% if linkedin_url %}
                 <div class="alert alert-success mb-3">
                     <i data-feather="check-circle" class="me-2"></i> LinkedIn profile found and extracted!
                 </div>
-                
-                {% if data.authentication_required == "true" and not is_authenticated %}
-                <div class="alert alert-warning">
-                    <div class="d-flex align-items-center mb-2">
-                        <i data-feather="alert-triangle" class="me-2"></i>
-                        <strong>Limited Data Access</strong>
-                    </div>
-                    <p class="mb-2">Some LinkedIn data requires authentication. Log in to access:</p>
-                    <ul class="mb-2">
-                        <li>Complete company posts and activity data</li>
-                        <li>Detailed job listings</li>
-                        <li>Employee information</li>
-                        <li>Leadership team details</li>
-                    </ul>
-                    <a href="/linkedin-auth" class="btn btn-sm btn-info">
-                        <i data-feather="log-in" class="me-1"></i> LinkedIn Login
-                    </a>
-                </div>
-                {% elif is_authenticated %}
-                <div class="alert alert-info">
-                    <i data-feather="user-check" class="me-2"></i>
-                    <span>Authenticated as <strong>{{ auth_username }}</strong>. You have access to enhanced LinkedIn data.</span>
-                </div>
-                {% endif %}
-                
                 <p class="text-muted">
                     Source Website: <a href="{{ source_website }}" target="_blank">{{ source_website }}</a><br>
                     LinkedIn Profile: <a href="{{ linkedin_url }}" target="_blank">{{ linkedin_url }}</a>

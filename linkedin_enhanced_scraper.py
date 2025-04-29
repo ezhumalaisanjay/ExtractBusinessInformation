@@ -13,7 +13,6 @@ import urllib.request
 from urllib.parse import urlparse, urljoin
 import trafilatura
 from bs4 import BeautifulSoup
-import linkedin_auth
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -43,38 +42,16 @@ def extract_posts(linkedin_url):
         posts_url = linkedin_url
     
     try:
-        # Check if we have authentication
-        if linkedin_auth.is_authenticated():
-            logger.info(f"Using authenticated session for: {posts_url}")
-            html_content = linkedin_auth.fetch_url_with_auth(posts_url)
-            if html_content:
-                downloaded = html_content
-                login_redirect = False
-            else:
-                # Authentication didn't work for some reason
-                logger.warning("Authenticated fetch failed, falling back to unauthenticated method")
-                downloaded = trafilatura.fetch_url(posts_url)
-        else:
-            # Use trafilatura to get HTML content without auth
-            downloaded = trafilatura.fetch_url(posts_url)
+        # Use trafilatura to get HTML content
+        downloaded = trafilatura.fetch_url(posts_url)
         
         # Check for login redirect
         login_redirect = False
         if not downloaded or 'uas/login' in str(downloaded).lower():
             login_redirect = True
             logger.warning(f"LinkedIn requires login to view posts. Using main company page instead: {linkedin_url}")
-            
-            # Try using the main company page with authentication if available
-            if linkedin_auth.is_authenticated():
-                html_content = linkedin_auth.fetch_url_with_auth(linkedin_url)
-                if html_content:
-                    downloaded = html_content
-                else:
-                    downloaded = trafilatura.fetch_url(linkedin_url)
-            else:
-                # Try using the main company page to at least get some activity info
-                downloaded = trafilatura.fetch_url(linkedin_url)
-                
+            # Try using the main company page to at least get some activity info
+            downloaded = trafilatura.fetch_url(linkedin_url)
             if not downloaded:
                 logger.error(f"Failed to download company page: {linkedin_url}")
                 # Return a basic structure with explanation
@@ -644,62 +621,21 @@ def extract_all_enhanced_data(linkedin_url):
     Returns:
         Dictionary with all enhanced data
     """
-    # Get authentication status
-    is_authenticated = linkedin_auth.is_authenticated()
-    auth_username = linkedin_auth.get_auth_username()
-    auth_error = linkedin_auth.get_auth_error()
-    
-    enhanced_data = {
-        'authentication_status': {
-            'is_authenticated': is_authenticated,
-            'username': auth_username,
-            'error': auth_error
-        }
-    }
-    
-    # Track if any part requires authentication
-    auth_required = False
+    enhanced_data = {}
     
     # Extract posts
     posts_data = extract_posts(linkedin_url)
     if posts_data:
-        if isinstance(posts_data, dict):
-            # Check if post count indicates login required
-            post_count = posts_data.get('post_count', '')
-            if isinstance(post_count, str) and 'login required' in post_count.lower():
-                auth_required = True
-            
-            # Add posts data to enhanced data
-            enhanced_data.update(posts_data)
+        enhanced_data['posts'] = posts_data
     
     # Extract job openings
     jobs_data = extract_job_openings(linkedin_url)
     if jobs_data:
-        if isinstance(jobs_data, dict):
-            # Check if jobs data indicates login required
-            job_count = jobs_data.get('job_opening_count', '')
-            job_openings = jobs_data.get('job_openings', [])
-            if (isinstance(job_count, str) and 'login required' in job_count.lower()) or \
-               (len(job_openings) == 1 and job_openings[0].get('title', '').lower() == 'login required'):
-                auth_required = True
-            
-            # Add jobs data to enhanced data
-            enhanced_data.update(jobs_data)
+        enhanced_data['jobs'] = jobs_data
     
     # Extract people
     people_data = extract_people(linkedin_url)
     if people_data:
-        if isinstance(people_data, dict):
-            # Check if people data indicates login required
-            employee_count = people_data.get('employee_count', '')
-            if isinstance(employee_count, str) and 'login required' in employee_count.lower():
-                auth_required = True
-            
-            # Add people data to enhanced data
-            enhanced_data.update(people_data)
+        enhanced_data['people'] = people_data
     
-    # Set authentication_required flag based on detected login prompts
-    enhanced_data['authentication_required'] = "true" if auth_required else "false"
-    
-    logger.info(f"Enhanced data extraction complete for {linkedin_url} (Auth required: {auth_required})")
     return enhanced_data
