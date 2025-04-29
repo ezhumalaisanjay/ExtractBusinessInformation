@@ -75,7 +75,11 @@ def login_to_linkedin(session):
             # Continue anyway, we might still be able to get the login page
         
         # Add a slight delay to mimic human behavior
-        time.sleep(1.5)
+        try:
+            time.sleep(1)  # Reduced sleep time to avoid interruptions
+        except (KeyboardInterrupt, SystemExit):
+            logger.warning("Sleep interrupted during LinkedIn homepage access")
+            pass
         
         # Get the login page to retrieve CSRF token
         login_url = 'https://www.linkedin.com/login'
@@ -103,7 +107,11 @@ def login_to_linkedin(session):
             }
             
             # Add a slight delay before attempting login
-            time.sleep(2)
+            try:
+                time.sleep(1)  # Reduced sleep time to avoid interruptions
+            except (KeyboardInterrupt, SystemExit):
+                logger.warning("Sleep interrupted during login preparation")
+                pass
             
             # Attempt login with enhanced headers for this specific request
             login_headers = session.headers.copy()
@@ -184,7 +192,11 @@ def fetch_linkedin_page(url, use_auth=True):
         logger.info(f"Fetching LinkedIn page: {url}")
         
         # Add jitter to seem more human-like
-        time.sleep(1 + random.random())
+        try:
+            time.sleep(0.5 + random.random() * 0.5)  # Random delay between 0.5-1s
+        except (KeyboardInterrupt, SystemExit):
+            logger.warning("Sleep interrupted during page fetch")
+            pass
         
         response = session.get(url, timeout=15, allow_redirects=True)
         
