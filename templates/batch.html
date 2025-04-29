@@ -77,6 +77,19 @@
                                 </div>
                             </div>
                             
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="use-auth" name="use_auth" value="true">
+                                <label class="form-check-label" for="use-auth">
+                                    <i data-feather="unlock" class="feather-sm text-success me-1"></i>
+                                    Use authenticated access for LinkedIn (gets more complete data)
+                                </label>
+                                <div class="mt-1">
+                                    <small class="text-muted">
+                                        Using LinkedIn authentication to extract more comprehensive data including posts, jobs, and employee information that's normally restricted.
+                                    </small>
+                                </div>
+                            </div>
+                            
                             <button type="submit" class="btn btn-primary" id="submitBtn">
                                 <i data-feather="search"></i> Process URLs
                             </button>
@@ -211,7 +224,8 @@ Content-Type: application/json
                     },
                     body: JSON.stringify({
                         urls: urls,
-                        mode: mode
+                        mode: mode,
+                        use_auth: document.getElementById('use-auth').checked
                     }),
                 })
                 .then(response => response.json())

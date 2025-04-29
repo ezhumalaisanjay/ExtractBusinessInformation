@@ -83,6 +83,19 @@
                                 </div>
                             </div>
                             
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="use-auth" name="use_auth" value="true">
+                                <label class="form-check-label" for="use-auth">
+                                    <i data-feather="unlock" class="feather-sm text-success me-1"></i>
+                                    Use authenticated access for LinkedIn (gets more complete data)
+                                </label>
+                                <div class="mt-1">
+                                    <small class="text-muted">
+                                        Using LinkedIn authentication to extract more comprehensive data including posts, jobs, and employee information that's normally restricted.
+                                    </small>
+                                </div>
+                            </div>
+                            
                             <div class="form-text mb-3">
                                 <i data-feather="info" class="feather-sm text-info"></i> 
                                 Our advanced scraper can extract detailed company history, founding dates, funding information, and operational timelines
@@ -121,7 +134,8 @@ Content-Type: application/json
 
 {
   "url": "https://example.com",
-  "mode": "direct"  // Optional, defaults to "direct"
+  "mode": "direct",  // Optional, defaults to "direct"
+  "use_auth": false  // Optional, use LinkedIn authentication (if applicable)
 }</code></pre>
 
                         <h5 class="mt-3">Find LinkedIn & Extract</h5>
@@ -130,7 +144,17 @@ Content-Type: application/json
 
 {
   "url": "https://example.com", 
-  "mode": "find_linkedin"  // Find LinkedIn URL and extract data
+  "mode": "find_linkedin",  // Find LinkedIn URL and extract data
+  "use_auth": true  // Optional, use LinkedIn authentication for more data
+}</code></pre>
+
+                        <h5 class="mt-3">LinkedIn Authenticated Scraping</h5>
+                        <pre><code>POST /api/scrape
+Content-Type: application/json
+
+{
+  "url": "https://linkedin.com/company/microsoft",
+  "use_auth": true  // Use LinkedIn credentials to extract more data
 }</code></pre>
 
                         <h5 class="mt-3">Just Find LinkedIn URL</h5>

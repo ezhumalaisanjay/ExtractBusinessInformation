@@ -305,6 +305,7 @@ def api_batch_process():
     
     urls = data['urls']
     mode = data.get('mode', 'find_linkedin')  # Default to find_linkedin mode
+    use_auth = data.get('use_auth', False)     # Authentication option
     
     if not isinstance(urls, list):
         return jsonify({
@@ -326,18 +327,76 @@ def api_batch_process():
             if not url.startswith(('http://', 'https://')):
                 url = 'https://' + url
             
+            # Check if this is a LinkedIn URL and authentication is enabled
+            if use_auth and 'linkedin.com' in url and mode == 'direct':
+                # Use authenticated LinkedIn scraping
+                logger.info(f"Batch: Using authenticated scraping for LinkedIn URL: {url}")
+                enhanced_data = extract_all_company_data(url)
+                
+                # Create result structure
+                result_data = {
+                    'company_name': "LinkedIn Company",
+                    'description': "Data extracted with LinkedIn authentication",
+                    'linkedin_data': enhanced_data,
+                    'authenticated': True
+                }
+                
+                # Try to get a better company name
+                if enhanced_data.get('people', {}).get('leaders'):
+                    for leader in enhanced_data['people']['leaders']:
+                        if 'title' in leader and ('CEO' in leader['title'] or 'Founder' in leader['title']):
+                            company_name = leader['name'].split(' at ')[-1] if ' at ' in leader['name'] else None
+                            if company_name:
+                                result_data['company_name'] = company_name
+                
+                results.append({
+                    'success': True,
+                    'url': url,
+                    'data': result_data,
+                    'authenticated': True
+                })
+                continue
+            
             # Process based on mode
             if mode == 'find_linkedin':
                 # Find LinkedIn URL and extract data
                 result = find_and_extract_linkedin_about(url)
                 
                 if result["success"]:
-                    results.append({
-                        'success': True,
-                        'website_url': url,
-                        'linkedin_url': result["linkedin_url"],
-                        'company_data': result["company_data"]
-                    })
+                    linkedin_url = result["linkedin_url"]
+                    company_data = result["company_data"]
+                    
+                    # If authentication is enabled and LinkedIn URL found, enhance with authenticated data
+                    if use_auth and linkedin_url:
+                        logger.info(f"Batch: Using authenticated scraping for found LinkedIn URL: {linkedin_url}")
+                        enhanced_data = extract_all_company_data(linkedin_url)
+                        
+                        # Merge enhanced data
+                        if 'linkedin_data' not in company_data:
+                            company_data['linkedin_data'] = {}
+                        
+                        if enhanced_data.get('posts'):
+                            company_data['linkedin_data']['posts'] = enhanced_data['posts']
+                        if enhanced_data.get('jobs'):
+                            company_data['linkedin_data']['jobs'] = enhanced_data['jobs']
+                        if enhanced_data.get('people'):
+                            company_data['linkedin_data']['people'] = enhanced_data['people']
+                        
+                        results.append({
+                            'success': True,
+                            'website_url': url,
+                            'linkedin_url': linkedin_url,
+                            'company_data': company_data,
+                            'authenticated': True
+                        })
+                    else:
+                        # Regular non-authenticated result
+                        results.append({
+                            'success': True,
+                            'website_url': url,
+                            'linkedin_url': linkedin_url,
+                            'company_data': company_data
+                        })
                 else:
                     results.append({
                         'success': False,
