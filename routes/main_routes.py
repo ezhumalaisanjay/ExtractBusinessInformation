@@ -30,6 +30,7 @@ def about():
     """Render the about page"""
     return render_template('about.html')
 
+@main_bp.route('/batch/')
 @main_bp.route('/batch')
 def batch():
     """Render the batch processing page"""
