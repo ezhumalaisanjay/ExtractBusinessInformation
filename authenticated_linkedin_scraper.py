@@ -8,6 +8,7 @@ import logging
 import re
 import os
 import time
+import random
 import requests
 from bs4 import BeautifulSoup
 
@@ -46,12 +47,12 @@ def setup_authenticated_session():
     
     return session
 
-def login_to_linkedin(opener):
+def login_to_linkedin(session):
     """
     Authenticate with LinkedIn using the provided credentials
     
     Args:
-        opener: urllib.request.OpenerDirector with cookie support
+        session: requests.Session with cookie support
     
     Returns:
         bool: True if login was successful, False otherwise
@@ -60,60 +61,105 @@ def login_to_linkedin(opener):
         logger.warning("LinkedIn credentials not provided. Cannot authenticate.")
         return False
     
-    # Due to LinkedIn's strict security measures, we need a fallback mechanism
-    # when direct authentication isn't possible
-    
-    logger.info("LinkedIn authentication is being attempted in limited mode")
-    logger.warning("LinkedIn has strict anti-scraping measures that may prevent full authentication")
-    
-    # We'll set limited authentication cookies to help access some data
-    cookie_jar = http.cookiejar.CookieJar()
-    cookie_jar.set_cookie(http.cookiejar.Cookie(
-        version=0, name='li_at', value='temp_session_token',
-        port=None, port_specified=False,
-        domain='.linkedin.com', domain_specified=True, domain_initial_dot=True,
-        path='/', path_specified=True,
-        secure=True, expires=None, discard=False,
-        comment=None, comment_url=None,
-        rest={'HttpOnly': None}
-    ))
-    
     try:
-        # Access a public company page to simulate normal browsing behavior
-        logger.info("Attempting to access public LinkedIn data...")
-        sample_company_url = 'https://www.linkedin.com/company/microsoft/'
+        logger.info("LinkedIn authentication is being attempted")
         
-        # Add random delay to mimic human behavior
+        # First, access a public page to get cookies
+        logger.info("Accessing LinkedIn homepage to get initial cookies...")
+        try:
+            home_response = session.get('https://www.linkedin.com/', timeout=10)
+            home_response.raise_for_status()
+            logger.info(f"Successfully accessed LinkedIn homepage, status: {home_response.status_code}")
+        except requests.RequestException as e:
+            logger.warning(f"Error accessing LinkedIn homepage: {str(e)}")
+            # Continue anyway, we might still be able to get the login page
+        
+        # Add a slight delay to mimic human behavior
         time.sleep(1.5)
         
-        # Before attempting login, we'll try to get some public data
+        # Get the login page to retrieve CSRF token
+        login_url = 'https://www.linkedin.com/login'
+        logger.info(f"Fetching LinkedIn login page: {login_url}")
+        
         try:
-            public_page = opener.open(sample_company_url)
-            logger.info("Successfully accessed public LinkedIn page")
-        except Exception as e:
-            logger.warning(f"Could not access public LinkedIn page: {str(e)}")
-        
-        # Now try a modified authentication approach with enhanced headers
-        opener.addheaders = [
-            ('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'),
-            ('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'),
-            ('Accept-Language', 'en-US,en;q=0.5'),
-            ('Connection', 'keep-alive'),
-            ('Upgrade-Insecure-Requests', '1'),
-            ('Cache-Control', 'max-age=0'),
-            ('Sec-Fetch-Dest', 'document'),
-            ('Sec-Fetch-Mode', 'navigate'),
-            ('Sec-Fetch-Site', 'cross-site'),
-            ('Sec-Fetch-User', '?1'),
-            ('DNT', '1'),
-            ('Referer', 'https://www.google.com/')
-        ]
-        
-        # Return partial success - we'll use a more resilient approach to data extraction
-        return True
-        
+            login_response = session.get(login_url, timeout=10)
+            login_response.raise_for_status()
+            login_page = login_response.text
+            
+            # Extract CSRF token
+            csrf_match = re.search(r'name="loginCsrfParam".*?value="([^"]+)"', login_page)
+            if not csrf_match:
+                logger.error("Could not find CSRF token on LinkedIn login page")
+                return False
+            
+            csrf_token = csrf_match.group(1)
+            logger.info("Found LinkedIn CSRF token")
+            
+            # Prepare login data
+            login_data = {
+                'session_key': LINKEDIN_EMAIL,
+                'session_password': LINKEDIN_PASSWORD,
+                'loginCsrfParam': csrf_token
+            }
+            
+            # Add a slight delay before attempting login
+            time.sleep(2)
+            
+            # Attempt login with enhanced headers for this specific request
+            login_headers = session.headers.copy()
+            login_headers.update({
+                'Referer': login_url,
+                'Origin': 'https://www.linkedin.com',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            })
+            
+            logger.info("Attempting LinkedIn login...")
+            auth_response = session.post(
+                login_url,
+                data=login_data,
+                headers=login_headers,
+                allow_redirects=True,
+                timeout=15
+            )
+            
+            # Check if login was successful based on response URL or cookies
+            if 'feed' in auth_response.url or 'checkpoint' in auth_response.url:
+                logger.info("LinkedIn login successful")
+                return True
+            elif 'li_at' in session.cookies:
+                logger.info("LinkedIn login appears successful based on cookies")
+                return True
+            else:
+                # LinkedIn may have security measures blocking automated login
+                # Fall back to limited access mode
+                logger.warning(f"LinkedIn login failed or redirected to: {auth_response.url}")
+                
+                # If we're redirected to a challenge page, we need a different approach
+                if 'checkpoint' in auth_response.url or 'challenge' in auth_response.url:
+                    logger.warning("LinkedIn is requesting additional verification which we cannot provide")
+                
+                # We'll try to proceed with limited access
+                logger.info("Proceeding with limited access to public LinkedIn data")
+                
+                # Access a sample company page to get some public LinkedIn cookies
+                sample_company_url = 'https://www.linkedin.com/company/microsoft/'
+                try:
+                    sample_response = session.get(sample_company_url, timeout=10)
+                    if sample_response.status_code == 200:
+                        logger.info("Successfully accessed public LinkedIn company page with limited access")
+                        # We have some level of access, but not authenticated
+                        return False
+                except requests.RequestException as e:
+                    logger.warning(f"Could not access public LinkedIn page: {str(e)}")
+                
+                return False
+                
+        except requests.RequestException as e:
+            logger.error(f"Error during LinkedIn login attempt: {str(e)}")
+            return False
+            
     except Exception as e:
-        logger.error(f"Error during LinkedIn authentication setup: {str(e)}")
+        logger.error(f"Error during LinkedIn authentication process: {str(e)}")
         return False
 
 def fetch_linkedin_page(url, use_auth=True):
@@ -127,25 +173,52 @@ def fetch_linkedin_page(url, use_auth=True):
     Returns:
         tuple: (html_content, authenticated_status)
     """
-    opener = setup_authenticated_session()
+    session = setup_authenticated_session()
     authenticated = False
     
     if use_auth:
-        authenticated = login_to_linkedin(opener)
+        authenticated = login_to_linkedin(session)
     
     try:
-        # Fetch the requested URL
+        # Fetch the requested URL with appropriate timeout
         logger.info(f"Fetching LinkedIn page: {url}")
-        response = opener.open(url)
-        html_content = response.read().decode('utf-8')
+        
+        # Add jitter to seem more human-like
+        time.sleep(1 + random.random())
+        
+        response = session.get(url, timeout=15, allow_redirects=True)
+        
+        # Check status code
+        if response.status_code != 200:
+            logger.warning(f"Received non-200 status code: {response.status_code} for {url}")
+            
+            if response.status_code == 403:
+                logger.warning("LinkedIn is blocking our request (403 Forbidden)")
+            elif response.status_code == 429:
+                logger.warning("LinkedIn rate limit exceeded (429 Too Many Requests)")
+                
+            # For certain status codes, we'll try to continue with the content we have
+            if response.status_code in [403, 429] and response.text:
+                logger.info("Using partial response content despite error status code")
+                html_content = response.text
+            else:
+                return None, authenticated
+        else:
+            html_content = response.text
         
         # Verify we didn't get redirected to login
-        if 'uas/login' in response.geturl():
-            logger.warning(f"Still redirected to login page despite authentication attempt")
+        if 'uas/login' in response.url:
+            logger.warning(f"Redirected to login page despite authentication attempt")
             authenticated = False
         
         return html_content, authenticated
     
+    except requests.Timeout:
+        logger.error(f"Timeout while fetching LinkedIn page: {url}")
+        return None, authenticated
+    except requests.RequestException as e:
+        logger.error(f"Request error fetching LinkedIn page {url}: {str(e)}")
+        return None, authenticated
     except Exception as e:
         logger.error(f"Error fetching LinkedIn page {url}: {str(e)}")
         return None, authenticated
