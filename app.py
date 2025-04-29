@@ -3,7 +3,8 @@ import logging
 from flask import Flask, render_template, request, jsonify, flash, redirect, url_for
 from scraper import scrape_website
 from linkedin_finder import extract_linkedin_url, find_and_extract_linkedin_about
-from authenticated_linkedin_scraper import extract_all_company_data
+# Use enhanced LinkedIn scraper that can handle 999 status code errors
+from enhanced_linkedin_scraper import extract_all_company_data
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
