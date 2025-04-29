@@ -13,7 +13,7 @@ main_bp = Blueprint('main', __name__)
 @main_bp.route('/')
 def index():
     """Render the main landing page"""
-    return render_template('index.html')
+    return render_template('index.html', redirect_url=request.args.get('redirect', '/'))
 
 @main_bp.route('/extract')
 def extract_data():
