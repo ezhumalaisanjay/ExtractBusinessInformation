@@ -25,12 +25,20 @@ def scrape_form():
         return render_template('linkedin_form.html')
     else:
         url = request.form.get('url')
+        mode = request.form.get('mode', 'direct')
+        use_auth = request.form.get('use_auth', 'false') == 'true'
+        
         if not url:
             flash('Please enter a URL', 'error')
             return redirect(url_for('main.scrape_form'))
+            
+        if not url.startswith(('http://', 'https://')):
+            url = 'https://' + url
+            
         try:
-            # Process the URL here
-            return render_template('results.html', url=url)
+            from scraper import scrape_website
+            result = scrape_website(url)
+            return render_template('results.html', url=url, data=result)
         except Exception as e:
             flash(str(e), 'error')
             return redirect(url_for('main.scrape_form'))
