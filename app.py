@@ -1,6 +1,6 @@
 import os
 import logging
-from flask import Flask, render_template, request, jsonify, flash, redirect, url_for
+from flask import Flask, render_template, request, jsonify, flash, redirect, url_for, make_response
 from scraper import scrape_website
 from linkedin_finder import extract_linkedin_url, find_and_extract_linkedin_about
 # Use enhanced LinkedIn scraper that can handle 999 status code errors
@@ -14,9 +14,27 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key")
 
-# Set LinkedIn credentials from environment variables or default to user-provided values
-os.environ['LINKEDIN_EMAIL'] = os.environ.get('LINKEDIN_EMAIL', 'ezhumalaisanjay05@gmail.com')
-os.environ['LINKEDIN_PASSWORD'] = os.environ.get('LINKEDIN_PASSWORD', 'Sanjay@2023')
+# Set LinkedIn credentials from environment variables 
+os.environ['LINKEDIN_EMAIL'] = os.environ.get('LINKEDIN_EMAIL', '')
+os.environ['LINKEDIN_PASSWORD'] = os.environ.get('LINKEDIN_PASSWORD', '')
+
+# Add CORS headers
+@app.after_request
+def add_cors_headers(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+    return response
+
+# Handle OPTIONS method for all routes
+@app.route('/', defaults={'path': ''}, methods=['OPTIONS'])
+@app.route('/<path:path>', methods=['OPTIONS'])
+def handle_options(path):
+    response = make_response()
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+    return response
 
 @app.route('/', methods=['GET'])
 def index():
