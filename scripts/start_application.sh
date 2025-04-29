@@ -1,13 +1,32 @@
 #!/bin/bash
+# Start application script for LinkedIn Business Intelligence Extractor
+# Compatible with AWS Amplify deployment
 
-# Navigate to app directory
-cd /var/www/html/linkedin-scraper
+echo "Starting LinkedIn Business Intelligence Extractor application..."
 
-# Activate virtual environment
-source venv/bin/activate
+# Load environment variables if .env file exists
+if [ -f .env ]; then
+    echo "Loading environment variables from .env file"
+    export $(grep -v '^#' .env | xargs)
+fi
+
+# Set default port if not defined
+if [ -z "$PORT" ]; then
+    echo "PORT not defined, using default port 8080"
+    export PORT=8080
+else
+    echo "Using configured PORT: $PORT"
+fi
+
+# Set Python path if not defined
+if [ -z "$PYTHONPATH" ]; then
+    echo "Setting PYTHONPATH to current directory"
+    export PYTHONPATH=$(pwd)
+fi
 
 # Start application with gunicorn
-gunicorn --bind 0.0.0.0:5000 --workers 4 --reuse-port --reload main:app > /var/log/linkedin-scraper.log 2>&1 &
+echo "Starting application with gunicorn on port $PORT"
+gunicorn --bind 0.0.0.0:$PORT --workers 3 --timeout 120 --access-logfile=- --error-logfile=- main:app
 
-# Save the process ID to stop it later
-echo $! > /var/www/html/linkedin-scraper/gunicorn.pid
+# Exit with gunicorn's exit code
+exit $?
