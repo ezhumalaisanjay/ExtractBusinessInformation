@@ -44,21 +44,31 @@
       "source": "/api/*",
       "destination": "/api/:splat",
       "type": "permanent"
-    },
-    {
-      "source": "/batch",
-      "destination": "/",
-      "type": "permanent"
-    },
-    {
-      "source": "/scrape",
-      "destination": "/",
-      "type": "permanent"
     }
   ],
   "rewrites": [
     {
-      "source": "/*",
+      "source": "/extract",
+      "destination": "/extract"
+    },
+    {
+      "source": "/batch",
+      "destination": "/batch"
+    },
+    {
+      "source": "/scrape",
+      "destination": "/scrape"
+    },
+    {
+      "source": "/about",
+      "destination": "/about"
+    },
+    {
+      "source": "/health",
+      "destination": "/health"
+    },
+    {
+      "source": "/",
       "destination": "/"
     }
   ]

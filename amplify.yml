@@ -23,7 +23,13 @@ backend:
         - echo "Build completed on $(date)"
     postBuild:
       commands:
-        - echo "Testing app startup"
+        - echo "Setting up Flask application"
+        - python -c "import scripts.cors_handler; print('CORS handler available for deployment')"
+        - echo "export FLASK_APP=main.py" >> .env
+        - echo "export FLASK_ENV=production" >> .env
+        - echo "export PYTHONPATH=/var/app/current" >> .env
+        - echo "Running health check tests"
+        - python -c "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')"
   artifacts:
     baseDirectory: /
     files:
@@ -72,14 +78,23 @@ frontend:
     - source: '/static/*'
       target: '/static/:splat'
       status: '200'
-    - source: '/scrape'
-      target: '/index.html'
+    - source: '/extract'
+      target: '/extract'
       status: '200'
     - source: '/batch'
-      target: '/index.html'
+      target: '/batch'
+      status: '200'
+    - source: '/scrape'
+      target: '/scrape'
+      status: '200'
+    - source: '/about'
+      target: '/about'
+      status: '200'
+    - source: '/health'
+      target: '/health'
       status: '200'
     - source: '/'
-      target: '/index.html'
+      target: '/'
       status: '200'
 
 buildSpec: amplify.yml

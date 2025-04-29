@@ -20,7 +20,11 @@ def setup_cors(app):
     @app.route('/api/health', methods=['GET'])
     def health_check():
         """Health check endpoint for AWS Amplify"""
-        return jsonify({'status': 'healthy'})
+        return jsonify({
+            'status': 'healthy',
+            'service': 'LinkedIn Business Intelligence Extractor',
+            'version': '1.0.0'
+        })
     
     @app.route('/api/test-cors', methods=['GET'])
     def test_cors():
