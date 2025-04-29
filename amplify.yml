@@ -14,6 +14,11 @@ frontend:
         - mkdir -p static/css
         - mkdir -p static/js
         - mkdir -p static/images
+        - echo "Setting up server configuration"
+        - echo "export PORT=8080" > .env
+        - echo "#!/bin/bash" > start.sh
+        - echo "python start_server.py" >> start.sh
+        - chmod +x start.sh
         - echo "Build completed on $(date)"
     postBuild:
       commands:
@@ -38,15 +43,19 @@ frontend:
 
   rewrites:
     - source: '/<*>'
-      target: '/index.html'
+      target: '/'
       status: '200'
-    - source: '/'
-      target: '/index.html'
+    - source: '/scrape'
+      target: '/'
       status: '200'
     - source: '/batch'
-      target: '/index.html'
+      target: '/'
       status: '200'
 
 buildSpec: amplify.yml
-
 appRoot: /
+staticWebsiteSettings:
+  redirects:
+    - source: '/_next/*'
+      target: '/static/:splat'
+      status: '200'

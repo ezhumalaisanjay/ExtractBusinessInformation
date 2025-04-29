@@ -1,0 +1,29 @@
+[
+  {
+    "source": "/",
+    "target": "/api/",
+    "status": "200"
+  },
+  {
+    "source": "/scrape",
+    "target": "/api/scrape",
+    "status": "200"
+  },
+  {
+    "source": "/batch",
+    "target": "/api/batch",
+    "status": "200"
+  },
+  {
+    "source": "/api/*",
+    "target": "/api/:splat",
+    "status": "200",
+    "condition": null
+  },
+  {
+    "source": "/static/*",
+    "target": "/static/:splat",
+    "status": "200",
+    "condition": null
+  }
+]
