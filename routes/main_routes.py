@@ -15,6 +15,11 @@ def index():
     """Render the main landing page"""
     return render_template('index.html', redirect_url=request.args.get('redirect', '/'))
 
+@main_bp.route('/scrape', methods=['GET'])
+def scrape_form():
+    """Render the scraping form page"""
+    return render_template('index.html')
+
 @main_bp.route('/extract')
 def extract_data():
     """Render the LinkedIn extraction form page"""

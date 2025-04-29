@@ -41,6 +41,11 @@ def index():
     """Render the main page with URL input form"""
     return render_template('index.html')
 
+@app.route('/scrape', methods=['GET'])
+def scrape_form():
+    """Render the scraping form page"""
+    return render_template('index.html')
+
 @app.route('/batch', methods=['GET'])
 def batch():
     """Render the batch processing page"""
