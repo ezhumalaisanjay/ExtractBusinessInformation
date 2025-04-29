@@ -1,8 +1,14 @@
 version: 1
 backend:
   phases:
+    preBuild:
+      commands:
+        - echo "Setting up Python environment"
+        - pyenv global 3.10.16
+        - python --version
     build:
       commands:
+        - pip install --upgrade pip
         - pip install -e .
         - echo "Build completed on $(date)"
   artifacts:

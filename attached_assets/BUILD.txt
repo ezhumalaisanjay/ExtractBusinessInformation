@@ -1,8 +1,8 @@
-2025-04-29T04:23:51.074Z [INFO]: # Cloning repository: git@github.com:ezhumalaisanjay/ExtractBusinessInformation.git
-2025-04-29T04:23:52.100Z [INFO]: 
-2025-04-29T04:23:52.101Z [INFO]: Cloning into 'ExtractBusinessInformation'...
-2025-04-29T04:23:52.101Z [INFO]: # Switching to commit: ef33aab82d80cc884d8b3de74a4c24d63cdd1fe9
-2025-04-29T04:23:52.123Z [INFO]: Note: switching to 'ef33aab82d80cc884d8b3de74a4c24d63cdd1fe9'.
+2025-04-29T04:27:25.836Z [INFO]: # Cloning repository: git@github.com:ezhumalaisanjay/ExtractBusinessInformation.git
+2025-04-29T04:27:26.946Z [INFO]: 
+2025-04-29T04:27:26.947Z [INFO]: Cloning into 'ExtractBusinessInformation'...
+2025-04-29T04:27:26.947Z [INFO]: # Switching to commit: c72bcc72178a1482470cfc8f776886650d82245f
+2025-04-29T04:27:26.970Z [INFO]: Note: switching to 'c72bcc72178a1482470cfc8f776886650d82245f'.
                                  You are in 'detached HEAD' state. You can look around, make experimental
                                  changes and commit them, and you can discard any commits you make in this
                                  state without impacting any branches by switching back to a branch.
@@ -12,60 +12,60 @@
                                  Or undo this operation with:
                                  git switch -
                                  Turn off this advice by setting config variable advice.detachedHead to false
-                                 HEAD is now at ef33aab Prepare application for cloud deployment and improve project documentation
-2025-04-29T04:23:52.168Z [INFO]: Successfully cleaned up Git credentials
-2025-04-29T04:23:52.168Z [INFO]: # Checking for Git submodules at: /codebuild/output/src498567751/src/ExtractBusinessInformation/.gitmodules
-2025-04-29T04:23:52.173Z [INFO]: # Retrieving environment cache...
-2025-04-29T04:23:52.231Z [WARNING]: ! Unable to write cache: {"code":"ERR_BAD_REQUEST","message":"Request failed with status code 404"})}
-2025-04-29T04:23:52.231Z [INFO]: ---- Setting Up SSM Secrets ----
-2025-04-29T04:23:52.231Z [INFO]: SSM params {"Path":"/amplify/d2xmglkf3lf43j/main/","WithDecryption":true}
-2025-04-29T04:23:52.278Z [WARNING]: !Failed to set up process.env.secrets
-2025-04-29T04:23:53.037Z [INFO]: # No package override configuration found.
-2025-04-29T04:23:53.041Z [INFO]: # Retrieving cache...
-2025-04-29T04:23:53.077Z [INFO]: # Retrieved cache
-2025-04-29T04:24:13.713Z [INFO]: ## Starting Backend Build
+                                 HEAD is now at c72bcc7 Update project description to reflect LinkedIn scraping functionality
+2025-04-29T04:27:26.985Z [INFO]: Successfully cleaned up Git credentials
+2025-04-29T04:27:26.985Z [INFO]: # Checking for Git submodules at: /codebuild/output/src1119704523/src/ExtractBusinessInformation/.gitmodules
+2025-04-29T04:27:26.990Z [INFO]: # Retrieving environment cache...
+2025-04-29T04:27:27.041Z [WARNING]: ! Unable to write cache: {"code":"ERR_BAD_REQUEST","message":"Request failed with status code 404"})}
+2025-04-29T04:27:27.041Z [INFO]: ---- Setting Up SSM Secrets ----
+2025-04-29T04:27:27.042Z [INFO]: SSM params {"Path":"/amplify/d2xmglkf3lf43j/main/","WithDecryption":true}
+2025-04-29T04:27:27.091Z [WARNING]: !Failed to set up process.env.secrets
+2025-04-29T04:27:27.951Z [INFO]: # No package override configuration found.
+2025-04-29T04:27:27.955Z [INFO]: # Retrieving cache...
+2025-04-29T04:27:27.999Z [INFO]: # Retrieved cache
+2025-04-29T04:27:49.919Z [INFO]: ## Starting Backend Build
                                  # Starting phase: build
                                  # Executing command: pip install -e .
-2025-04-29T04:24:24.876Z [INFO]: Obtaining file:///codebuild/output/src498567751/src/ExtractBusinessInformation
-2025-04-29T04:24:24.882Z [INFO]: Installing build dependencies: started
-2025-04-29T04:24:33.623Z [INFO]: Installing build dependencies: finished with status 'done'
-2025-04-29T04:24:33.627Z [INFO]: Checking if build backend supports build_editable: started
-2025-04-29T04:24:34.019Z [INFO]: Checking if build backend supports build_editable: finished with status 'done'
-2025-04-29T04:24:34.020Z [INFO]: Getting requirements to build editable: started
-2025-04-29T04:24:34.233Z [INFO]: Getting requirements to build editable: finished with status 'done'
-2025-04-29T04:24:34.234Z [INFO]: Preparing editable metadata (pyproject.toml): started
-2025-04-29T04:24:34.449Z [INFO]: Preparing editable metadata (pyproject.toml): finished with status 'done'
-2025-04-29T04:24:34.470Z [INFO]: Requirement already satisfied: flask>=3.1.0 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from repl-nix-workspace==0.1.0) (3.1.0)
-2025-04-29T04:24:34.581Z [INFO]: Collecting gunicorn>=23.0.0
-2025-04-29T04:24:34.621Z [INFO]: Downloading gunicorn-23.0.0-py3-none-any.whl (85 kB)
-2025-04-29T04:24:34.638Z [INFO]: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 85.0/85.0 kB 5.3 MB/s eta 0:00:00
-2025-04-29T04:24:34.638Z [INFO]: 
-2025-04-29T04:24:34.677Z [INFO]: Collecting beautifulsoup4>=4.13.4
-2025-04-29T04:24:34.720Z [INFO]: Downloading beautifulsoup4-4.13.4-py3-none-any.whl (187 kB)
-2025-04-29T04:24:34.733Z [INFO]: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 187.3/187.3 kB 17.5 MB/s eta 0:00:00
-2025-04-29T04:24:34.733Z [INFO]: 
-2025-04-29T04:24:34.779Z [INFO]: Collecting trafilatura>=2.0.0
-2025-04-29T04:24:34.789Z [INFO]: Downloading trafilatura-2.0.0-py3-none-any.whl (132 kB)
-2025-04-29T04:24:34.796Z [INFO]: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 132.6/132.6 kB 28.1 MB/s eta 0:00:00
-2025-04-29T04:24:34.796Z [INFO]: 
-2025-04-29T04:24:34.973Z [INFO]: Collecting psycopg2-binary>=2.9.10
-2025-04-29T04:24:34.983Z [INFO]: Downloading psycopg2_binary-2.9.10-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.0 MB)
-2025-04-29T04:24:35.019Z [INFO]: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.0/3.0 MB 87.7 MB/s eta 0:00:00
-2025-04-29T04:24:35.020Z [INFO]: 
-2025-04-29T04:24:35.059Z [INFO]: Collecting email-validator>=2.2.0
-2025-04-29T04:24:35.098Z [INFO]: Downloading email_validator-2.2.0-py3-none-any.whl (33 kB)
-2025-04-29T04:24:35.172Z [INFO]: Collecting pip-tools>=7.4.1
-2025-04-29T04:24:35.181Z [INFO]: Downloading pip_tools-7.4.1-py3-none-any.whl (61 kB)
-2025-04-29T04:24:35.187Z [INFO]: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 61.2/61.2 kB 15.6 MB/s eta 0:00:00
-2025-04-29T04:24:35.187Z [INFO]: 
-2025-04-29T04:24:35.189Z [INFO]: Requirement already satisfied: requests>=2.32.3 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from repl-nix-workspace==0.1.0) (2.32.3)
-2025-04-29T04:24:35.254Z [INFO]: Collecting flask-sqlalchemy>=3.1.1
-2025-04-29T04:24:35.267Z [INFO]: Downloading flask_sqlalchemy-3.1.1-py3-none-any.whl (25 kB)
-2025-04-29T04:24:35.271Z [WARNING]: ERROR: Package 'repl-nix-workspace' requires a different Python: 3.10.16 not in '>=3.11'
-2025-04-29T04:24:35.275Z [WARNING]: [notice] A new release of pip is available: 23.0.1 -> 25.1
+2025-04-29T04:28:02.076Z [INFO]: Obtaining file:///codebuild/output/src1119704523/src/ExtractBusinessInformation
+2025-04-29T04:28:02.082Z [INFO]: Installing build dependencies: started
+2025-04-29T04:28:11.521Z [INFO]: Installing build dependencies: finished with status 'done'
+2025-04-29T04:28:11.526Z [INFO]: Checking if build backend supports build_editable: started
+2025-04-29T04:28:11.931Z [INFO]: Checking if build backend supports build_editable: finished with status 'done'
+2025-04-29T04:28:11.932Z [INFO]: Getting requirements to build editable: started
+2025-04-29T04:28:12.160Z [INFO]: Getting requirements to build editable: finished with status 'done'
+2025-04-29T04:28:12.161Z [INFO]: Preparing editable metadata (pyproject.toml): started
+2025-04-29T04:28:12.390Z [INFO]: Preparing editable metadata (pyproject.toml): finished with status 'done'
+2025-04-29T04:28:12.491Z [INFO]: Collecting gunicorn>=23.0.0
+2025-04-29T04:28:12.570Z [INFO]: Downloading gunicorn-23.0.0-py3-none-any.whl (85 kB)
+2025-04-29T04:28:12.588Z [INFO]: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 85.0/85.0 kB 5.0 MB/s eta 0:00:00
+2025-04-29T04:28:12.588Z [INFO]: 
+2025-04-29T04:28:12.665Z [INFO]: Collecting pip-tools>=7.4.1
+2025-04-29T04:28:12.675Z [INFO]: Downloading pip_tools-7.4.1-py3-none-any.whl (61 kB)
+2025-04-29T04:28:12.681Z [INFO]: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 61.2/61.2 kB 13.6 MB/s eta 0:00:00
+2025-04-29T04:28:12.681Z [INFO]: 
+2025-04-29T04:28:12.758Z [INFO]: Collecting trafilatura>=2.0.0
+2025-04-29T04:28:12.771Z [INFO]: Downloading trafilatura-2.0.0-py3-none-any.whl (132 kB)
+2025-04-29T04:28:12.784Z [INFO]: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 132.6/132.6 kB 11.7 MB/s eta 0:00:00
+2025-04-29T04:28:12.784Z [INFO]: 
+2025-04-29T04:28:12.959Z [INFO]: Collecting psycopg2-binary>=2.9.10
+2025-04-29T04:28:12.970Z [INFO]: Downloading psycopg2_binary-2.9.10-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.0 MB)
+2025-04-29T04:28:13.014Z [INFO]: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.0/3.0 MB 71.7 MB/s eta 0:00:00
+2025-04-29T04:28:13.014Z [INFO]: 
+2025-04-29T04:28:13.055Z [INFO]: Collecting email-validator>=2.2.0
+2025-04-29T04:28:13.099Z [INFO]: Downloading email_validator-2.2.0-py3-none-any.whl (33 kB)
+2025-04-29T04:28:13.139Z [INFO]: Collecting flask-sqlalchemy>=3.1.1
+2025-04-29T04:28:13.149Z [INFO]: Downloading flask_sqlalchemy-3.1.1-py3-none-any.whl (25 kB)
+2025-04-29T04:28:13.154Z [INFO]: Requirement already satisfied: flask>=3.1.0 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from repl-nix-workspace==0.1.0) (3.1.0)
+2025-04-29T04:28:13.155Z [INFO]: Requirement already satisfied: requests>=2.32.3 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from repl-nix-workspace==0.1.0) (2.32.3)
+2025-04-29T04:28:13.190Z [INFO]: Collecting beautifulsoup4>=4.13.4
+2025-04-29T04:28:13.244Z [INFO]: Downloading beautifulsoup4-4.13.4-py3-none-any.whl (187 kB)
+2025-04-29T04:28:13.251Z [INFO]: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 187.3/187.3 kB 36.6 MB/s eta 0:00:00
+2025-04-29T04:28:13.251Z [INFO]: 
+2025-04-29T04:28:13.254Z [WARNING]: ERROR: Package 'repl-nix-workspace' requires a different Python: 3.10.16 not in '>=3.11'
+2025-04-29T04:28:13.257Z [WARNING]: [notice] A new release of pip is available: 23.0.1 -> 25.1
                                     [notice] To update, run: pip install --upgrade pip
-2025-04-29T04:24:35.360Z [ERROR]: !!! Build failed
-2025-04-29T04:24:35.361Z [ERROR]: !!! Error: Command failed with exit code 1
-2025-04-29T04:24:35.361Z [INFO]: # Starting environment caching...
-2025-04-29T04:24:35.361Z [INFO]: # Environment caching completed
+2025-04-29T04:28:13.354Z [ERROR]: !!! Build failed
+2025-04-29T04:28:13.354Z [ERROR]: !!! Error: Command failed with exit code 1
+2025-04-29T04:28:13.354Z [INFO]: # Starting environment caching...
+2025-04-29T04:28:13.354Z [INFO]: # Environment caching completed
 

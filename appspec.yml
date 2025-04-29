@@ -2,18 +2,21 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /var/app/current
-permissions:
-  - object: /var/app/current
-    pattern: "**"
-    owner: webapp
-    group: webapp
+    destination: /var/www/html/linkedin-scraper
 hooks:
   BeforeInstall:
-    - location: .platform/hooks/predeploy/01_setup.sh
+    - location: scripts/before_install.sh
       timeout: 300
       runas: root
   AfterInstall:
-    - location: .platform/hooks/postdeploy/01_migrate.sh
+    - location: scripts/after_install.sh
+      timeout: 300
+      runas: root
+  ApplicationStart:
+    - location: scripts/start_application.sh
+      timeout: 300
+      runas: root
+  ApplicationStop:
+    - location: scripts/stop_application.sh
       timeout: 300
       runas: root
