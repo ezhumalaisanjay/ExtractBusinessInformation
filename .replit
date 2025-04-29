@@ -37,7 +37,7 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "gunicorn --bind 0.0.0.0:5000 --workers 3 main:app"
+args = "gunicorn --bind 0.0.0.0:5000 --workers 3 --timeout 120 main:app"
 
 [[ports]]
 localPort = 5000
