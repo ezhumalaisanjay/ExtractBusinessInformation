@@ -1,8 +1,8 @@
-2025-04-29T04:37:48.682Z [INFO]: # Cloning repository: git@github.com:ezhumalaisanjay/ExtractBusinessInformation.git
-2025-04-29T04:37:49.845Z [INFO]: 
-2025-04-29T04:37:49.846Z [INFO]: Cloning into 'ExtractBusinessInformation'...
-2025-04-29T04:37:49.846Z [INFO]: # Switching to commit: 78e6488976a8168258cc56009d69ee6dffc71ff0
-2025-04-29T04:37:49.867Z [INFO]: Note: switching to '78e6488976a8168258cc56009d69ee6dffc71ff0'.
+2025-04-29T04:45:12.114Z [INFO]: # Cloning repository: git@github.com:ezhumalaisanjay/ExtractBusinessInformation.git
+2025-04-29T04:45:13.244Z [INFO]: 
+2025-04-29T04:45:13.245Z [INFO]: Cloning into 'ExtractBusinessInformation'...
+2025-04-29T04:45:13.245Z [INFO]: # Switching to commit: 76043043a6a0eb36304f1b7a7d3e28bd168b2576
+2025-04-29T04:45:13.270Z [INFO]: Note: switching to '76043043a6a0eb36304f1b7a7d3e28bd168b2576'.
                                  You are in 'detached HEAD' state. You can look around, make experimental
                                  changes and commit them, and you can discard any commits you make in this
                                  state without impacting any branches by switching back to a branch.
@@ -12,175 +12,191 @@
                                  Or undo this operation with:
                                  git switch -
                                  Turn off this advice by setting config variable advice.detachedHead to false
-                                 HEAD is now at 78e6488 Improve deployment process and set up the application environment
-2025-04-29T04:37:49.916Z [INFO]: Successfully cleaned up Git credentials
-2025-04-29T04:37:49.916Z [INFO]: # Checking for Git submodules at: /codebuild/output/src3807626924/src/ExtractBusinessInformation/.gitmodules
-2025-04-29T04:37:49.921Z [INFO]: # Retrieving environment cache...
-2025-04-29T04:37:49.963Z [WARNING]: ! Unable to write cache: {"code":"ERR_BAD_REQUEST","message":"Request failed with status code 404"})}
-2025-04-29T04:37:49.963Z [INFO]: ---- Setting Up SSM Secrets ----
-2025-04-29T04:37:49.963Z [INFO]: SSM params {"Path":"/amplify/d2xmglkf3lf43j/main/","WithDecryption":true}
-2025-04-29T04:37:50.011Z [WARNING]: !Failed to set up process.env.secrets
-2025-04-29T04:37:50.931Z [INFO]: # No package override configuration found.
-2025-04-29T04:37:50.936Z [INFO]: # Retrieving cache...
-2025-04-29T04:37:50.977Z [INFO]: # Retrieved cache
-2025-04-29T04:38:11.675Z [INFO]: ## Starting Backend Build
+                                 HEAD is now at 7604304 Improve application deployment process and set up the application environment
+2025-04-29T04:45:13.320Z [INFO]: Successfully cleaned up Git credentials
+2025-04-29T04:45:13.321Z [INFO]: # Checking for Git submodules at: /codebuild/output/src3945508519/src/ExtractBusinessInformation/.gitmodules
+2025-04-29T04:45:13.327Z [INFO]: # Retrieving environment cache...
+2025-04-29T04:45:13.401Z [INFO]: # Retrieved environment cache
+2025-04-29T04:45:13.402Z [INFO]: ---- Setting Up SSM Secrets ----
+2025-04-29T04:45:13.402Z [INFO]: SSM params {"Path":"/amplify/d2xmglkf3lf43j/main/","WithDecryption":true}
+2025-04-29T04:45:13.452Z [WARNING]: !Failed to set up process.env.secrets
+2025-04-29T04:45:14.265Z [INFO]: # No package override configuration found.
+2025-04-29T04:45:14.270Z [INFO]: # Retrieving cache...
+2025-04-29T04:45:14.299Z [INFO]: # Retrieved cache
+2025-04-29T04:45:36.343Z [INFO]: ## Starting Backend Build
                                  # Starting phase: preBuild
                                  # Executing command: echo "Setting up Python environment"
                                  Setting up Python environment
-2025-04-29T04:38:11.681Z [INFO]: # Executing command: pyenv global 3.10.16
-2025-04-29T04:38:11.703Z [INFO]: # Executing command: python --version
-2025-04-29T04:38:12.425Z [INFO]: Python 3.10.16
-2025-04-29T04:38:12.425Z [INFO]: # Completed phase: preBuild
+2025-04-29T04:45:36.349Z [INFO]: # Executing command: pyenv global 3.10.16
+2025-04-29T04:45:36.373Z [INFO]: # Executing command: python --version
+2025-04-29T04:45:37.095Z [INFO]: Python 3.10.16
+2025-04-29T04:45:37.096Z [INFO]: # Completed phase: preBuild
                                  # Starting phase: build
                                  # Executing command: pip install --upgrade pip
-2025-04-29T04:38:23.485Z [INFO]: Requirement already satisfied: pip in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (23.0.1)
-2025-04-29T04:38:23.722Z [INFO]: Collecting pip
-2025-04-29T04:38:23.770Z [INFO]: Downloading pip-25.1-py3-none-any.whl (1.8 MB)
-2025-04-29T04:38:23.831Z [INFO]: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.8/1.8 MB 31.2 MB/s eta 0:00:00
-2025-04-29T04:38:23.832Z [INFO]: 
-2025-04-29T04:38:30.259Z [INFO]: Installing collected packages: pip
-2025-04-29T04:38:30.263Z [INFO]: Attempting uninstall: pip
+2025-04-29T04:45:47.404Z [INFO]: Requirement already satisfied: pip in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (23.0.1)
+2025-04-29T04:45:47.628Z [INFO]: Collecting pip
+2025-04-29T04:45:47.675Z [INFO]: Downloading pip-25.1-py3-none-any.whl (1.8 MB)
+2025-04-29T04:45:47.733Z [INFO]: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.8/1.8 MB 33.0 MB/s eta 0:00:00
+2025-04-29T04:45:47.733Z [INFO]: 
+2025-04-29T04:45:54.435Z [INFO]: Installing collected packages: pip
+2025-04-29T04:45:54.441Z [INFO]: Attempting uninstall: pip
                                  Found existing installation: pip 23.0.1
-2025-04-29T04:38:30.758Z [INFO]: Uninstalling pip-23.0.1:
-2025-04-29T04:38:33.019Z [INFO]: Successfully uninstalled pip-23.0.1
-2025-04-29T04:38:33.906Z [INFO]: Successfully installed pip-25.1
-2025-04-29T04:38:34.177Z [INFO]: # Executing command: pip install -e .
-2025-04-29T04:38:34.768Z [INFO]: Obtaining file:///codebuild/output/src3807626924/src/ExtractBusinessInformation
-2025-04-29T04:38:34.771Z [INFO]: Installing build dependencies: started
-2025-04-29T04:38:39.592Z [INFO]: Installing build dependencies: finished with status 'done'
-2025-04-29T04:38:39.597Z [INFO]: Checking if build backend supports build_editable: started
-2025-04-29T04:38:39.856Z [INFO]: Checking if build backend supports build_editable: finished with status 'done'
-2025-04-29T04:38:39.857Z [INFO]: Getting requirements to build editable: started
-2025-04-29T04:38:40.224Z [INFO]: Getting requirements to build editable: finished with status 'done'
-2025-04-29T04:38:40.226Z [INFO]: Preparing editable metadata (pyproject.toml): started
-2025-04-29T04:38:40.433Z [INFO]: Preparing editable metadata (pyproject.toml): finished with status 'done'
-2025-04-29T04:38:40.560Z [INFO]: Collecting beautifulsoup4>=4.13.4 (from repl-nix-workspace==0.1.0)
-2025-04-29T04:38:40.605Z [INFO]: Downloading beautifulsoup4-4.13.4-py3-none-any.whl.metadata (3.8 kB)
-2025-04-29T04:38:40.668Z [INFO]: Collecting email-validator>=2.2.0 (from repl-nix-workspace==0.1.0)
-2025-04-29T04:38:40.679Z [INFO]: Downloading email_validator-2.2.0-py3-none-any.whl.metadata (25 kB)
-2025-04-29T04:38:40.691Z [INFO]: Requirement already satisfied: flask>=3.1.0 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from repl-nix-workspace==0.1.0) (3.1.0)
-2025-04-29T04:38:40.725Z [INFO]: Collecting flask-sqlalchemy>=3.1.1 (from repl-nix-workspace==0.1.0)
-2025-04-29T04:38:40.736Z [INFO]: Downloading flask_sqlalchemy-3.1.1-py3-none-any.whl.metadata (3.4 kB)
-2025-04-29T04:38:40.811Z [INFO]: Collecting gunicorn>=23.0.0 (from repl-nix-workspace==0.1.0)
-2025-04-29T04:38:40.822Z [INFO]: Downloading gunicorn-23.0.0-py3-none-any.whl.metadata (4.4 kB)
-2025-04-29T04:38:40.874Z [INFO]: Collecting pip-tools>=7.4.1 (from repl-nix-workspace==0.1.0)
-2025-04-29T04:38:40.885Z [INFO]: Downloading pip_tools-7.4.1-py3-none-any.whl.metadata (26 kB)
-2025-04-29T04:38:40.992Z [INFO]: Collecting psycopg2-binary>=2.9.10 (from repl-nix-workspace==0.1.0)
-2025-04-29T04:38:41.002Z [INFO]: Downloading psycopg2_binary-2.9.10-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.9 kB)
-2025-04-29T04:38:41.009Z [INFO]: Requirement already satisfied: requests>=2.32.3 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from repl-nix-workspace==0.1.0) (2.32.3)
-2025-04-29T04:38:41.035Z [INFO]: Collecting trafilatura>=2.0.0 (from repl-nix-workspace==0.1.0)
-2025-04-29T04:38:41.047Z [INFO]: Downloading trafilatura-2.0.0-py3-none-any.whl.metadata (12 kB)
-2025-04-29T04:38:41.084Z [INFO]: Collecting soupsieve>1.2 (from beautifulsoup4>=4.13.4->repl-nix-workspace==0.1.0)
-2025-04-29T04:38:41.096Z [INFO]: Downloading soupsieve-2.7-py3-none-any.whl.metadata (4.6 kB)
-2025-04-29T04:38:41.102Z [INFO]: Requirement already satisfied: typing-extensions>=4.0.0 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from beautifulsoup4>=4.13.4->repl-nix-workspace==0.1.0) (4.13.0)
-2025-04-29T04:38:41.126Z [INFO]: Collecting dnspython>=2.0.0 (from email-validator>=2.2.0->repl-nix-workspace==0.1.0)
-2025-04-29T04:38:41.137Z [INFO]: Downloading dnspython-2.7.0-py3-none-any.whl.metadata (5.8 kB)
-2025-04-29T04:38:41.149Z [INFO]: Requirement already satisfied: idna>=2.0.0 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from email-validator>=2.2.0->repl-nix-workspace==0.1.0) (3.10)
-2025-04-29T04:38:41.151Z [INFO]: Requirement already satisfied: Werkzeug>=3.1 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from flask>=3.1.0->repl-nix-workspace==0.1.0) (3.1.3)
-2025-04-29T04:38:41.152Z [INFO]: Requirement already satisfied: Jinja2>=3.1.2 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from flask>=3.1.0->repl-nix-workspace==0.1.0) (3.1.6)
-2025-04-29T04:38:41.152Z [INFO]: Requirement already satisfied: itsdangerous>=2.2 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from flask>=3.1.0->repl-nix-workspace==0.1.0) (2.2.0)
-2025-04-29T04:38:41.153Z [INFO]: Requirement already satisfied: click>=8.1.3 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from flask>=3.1.0->repl-nix-workspace==0.1.0) (8.1.8)
-2025-04-29T04:38:41.154Z [INFO]: Requirement already satisfied: blinker>=1.9 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from flask>=3.1.0->repl-nix-workspace==0.1.0) (1.9.0)
-2025-04-29T04:38:41.513Z [INFO]: Collecting sqlalchemy>=2.0.16 (from flask-sqlalchemy>=3.1.1->repl-nix-workspace==0.1.0)
-2025-04-29T04:38:41.559Z [INFO]: Downloading sqlalchemy-2.0.40-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (9.6 kB)
-2025-04-29T04:38:41.582Z [INFO]: Requirement already satisfied: packaging in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from gunicorn>=23.0.0->repl-nix-workspace==0.1.0) (24.2)
-2025-04-29T04:38:41.585Z [INFO]: Requirement already satisfied: MarkupSafe>=2.0 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from Jinja2>=3.1.2->flask>=3.1.0->repl-nix-workspace==0.1.0) (3.0.2)
-2025-04-29T04:38:41.645Z [INFO]: Collecting build>=1.0.0 (from pip-tools>=7.4.1->repl-nix-workspace==0.1.0)
-2025-04-29T04:38:41.657Z [INFO]: Downloading build-1.2.2.post1-py3-none-any.whl.metadata (6.5 kB)
-2025-04-29T04:38:41.671Z [INFO]: Requirement already satisfied: pip>=22.2 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from pip-tools>=7.4.1->repl-nix-workspace==0.1.0) (25.1)
-2025-04-29T04:38:41.688Z [INFO]: Collecting pyproject-hooks (from pip-tools>=7.4.1->repl-nix-workspace==0.1.0)
-2025-04-29T04:38:41.738Z [INFO]: Downloading pyproject_hooks-1.2.0-py3-none-any.whl.metadata (1.3 kB)
-2025-04-29T04:38:41.744Z [INFO]: Requirement already satisfied: setuptools in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from pip-tools>=7.4.1->repl-nix-workspace==0.1.0) (78.1.0)
-2025-04-29T04:38:41.745Z [INFO]: Requirement already satisfied: wheel in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from pip-tools>=7.4.1->repl-nix-workspace==0.1.0) (0.45.1)
-2025-04-29T04:38:41.771Z [INFO]: Collecting tomli (from pip-tools>=7.4.1->repl-nix-workspace==0.1.0)
-2025-04-29T04:38:41.781Z [INFO]: Downloading tomli-2.2.1-py3-none-any.whl.metadata (10 kB)
-2025-04-29T04:38:41.795Z [INFO]: Requirement already satisfied: charset-normalizer<4,>=2 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from requests>=2.32.3->repl-nix-workspace==0.1.0) (3.4.1)
-2025-04-29T04:38:41.796Z [INFO]: Requirement already satisfied: urllib3<3,>=1.21.1 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from requests>=2.32.3->repl-nix-workspace==0.1.0) (2.3.0)
-2025-04-29T04:38:41.797Z [INFO]: Requirement already satisfied: certifi>=2017.4.17 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from requests>=2.32.3->repl-nix-workspace==0.1.0) (2025.1.31)
-2025-04-29T04:38:41.982Z [INFO]: Collecting greenlet>=1 (from sqlalchemy>=2.0.16->flask-sqlalchemy>=3.1.1->repl-nix-workspace==0.1.0)
-2025-04-29T04:38:41.993Z [INFO]: Downloading greenlet-3.2.1-cp310-cp310-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (4.1 kB)
-2025-04-29T04:38:42.027Z [INFO]: Collecting courlan>=1.3.2 (from trafilatura>=2.0.0->repl-nix-workspace==0.1.0)
-2025-04-29T04:38:42.071Z [INFO]: Downloading courlan-1.3.2-py3-none-any.whl.metadata (17 kB)
-2025-04-29T04:38:42.107Z [INFO]: Collecting htmldate>=1.9.2 (from trafilatura>=2.0.0->repl-nix-workspace==0.1.0)
-2025-04-29T04:38:42.119Z [INFO]: Downloading htmldate-1.9.3-py3-none-any.whl.metadata (10 kB)
-2025-04-29T04:38:42.148Z [INFO]: Collecting justext>=3.0.1 (from trafilatura>=2.0.0->repl-nix-workspace==0.1.0)
-2025-04-29T04:38:42.160Z [INFO]: Downloading justext-3.0.2-py2.py3-none-any.whl.metadata (7.3 kB)
-2025-04-29T04:38:42.439Z [INFO]: Collecting lxml>=5.3.0 (from trafilatura>=2.0.0->repl-nix-workspace==0.1.0)
-2025-04-29T04:38:42.450Z [INFO]: Downloading lxml-5.4.0-cp310-cp310-manylinux_2_28_x86_64.whl.metadata (3.5 kB)
-2025-04-29T04:38:42.483Z [INFO]: Collecting babel>=2.16.0 (from courlan>=1.3.2->trafilatura>=2.0.0->repl-nix-workspace==0.1.0)
-2025-04-29T04:38:42.494Z [INFO]: Downloading babel-2.17.0-py3-none-any.whl.metadata (2.0 kB)
-2025-04-29T04:38:42.533Z [INFO]: Collecting tld>=0.13 (from courlan>=1.3.2->trafilatura>=2.0.0->repl-nix-workspace==0.1.0)
-2025-04-29T04:38:42.553Z [INFO]: Downloading tld-0.13-py2.py3-none-any.whl.metadata (9.4 kB)
-2025-04-29T04:38:42.562Z [INFO]: Requirement already satisfied: dateparser>=1.1.2 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from htmldate>=1.9.2->trafilatura>=2.0.0->repl-nix-workspace==0.1.0) (1.2.1)
-2025-04-29T04:38:42.569Z [INFO]: Requirement already satisfied: python-dateutil>=2.9.0.post0 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from htmldate>=1.9.2->trafilatura>=2.0.0->repl-nix-workspace==0.1.0) (2.9.0.post0)
-2025-04-29T04:38:42.575Z [INFO]: Requirement already satisfied: pytz>=2024.2 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from dateparser>=1.1.2->htmldate>=1.9.2->trafilatura>=2.0.0->repl-nix-workspace==0.1.0) (2025.2)
-2025-04-29T04:38:42.576Z [INFO]: Requirement already satisfied: regex!=2019.02.19,!=2021.8.27,>=2015.06.24 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from dateparser>=1.1.2->htmldate>=1.9.2->trafilatura>=2.0.0->repl-nix-workspace==0.1.0) (2024.11.6)
-2025-04-29T04:38:42.576Z [INFO]: Requirement already satisfied: tzlocal>=0.2 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from dateparser>=1.1.2->htmldate>=1.9.2->trafilatura>=2.0.0->repl-nix-workspace==0.1.0) (5.2)
-2025-04-29T04:38:42.605Z [INFO]: Collecting lxml_html_clean (from lxml[html_clean]>=4.4.2->justext>=3.0.1->trafilatura>=2.0.0->repl-nix-workspace==0.1.0)
-2025-04-29T04:38:42.617Z [INFO]: Downloading lxml_html_clean-0.4.2-py3-none-any.whl.metadata (2.4 kB)
-2025-04-29T04:38:42.624Z [INFO]: Requirement already satisfied: six>=1.5 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from python-dateutil>=2.9.0.post0->htmldate>=1.9.2->trafilatura>=2.0.0->repl-nix-workspace==0.1.0) (1.17.0)
-2025-04-29T04:38:42.662Z [INFO]: Downloading beautifulsoup4-4.13.4-py3-none-any.whl (187 kB)
-2025-04-29T04:38:42.758Z [INFO]: Downloading email_validator-2.2.0-py3-none-any.whl (33 kB)
-2025-04-29T04:38:42.776Z [INFO]: Downloading dnspython-2.7.0-py3-none-any.whl (313 kB)
-2025-04-29T04:38:42.803Z [INFO]: Downloading flask_sqlalchemy-3.1.1-py3-none-any.whl (25 kB)
-2025-04-29T04:38:42.818Z [INFO]: Downloading gunicorn-23.0.0-py3-none-any.whl (85 kB)
-2025-04-29T04:38:42.835Z [INFO]: Downloading pip_tools-7.4.1-py3-none-any.whl (61 kB)
-2025-04-29T04:38:42.851Z [INFO]: Downloading build-1.2.2.post1-py3-none-any.whl (22 kB)
-2025-04-29T04:38:42.867Z [INFO]: Downloading psycopg2_binary-2.9.10-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.0 MB)
-2025-04-29T04:38:42.898Z [INFO]: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.0/3.0 MB 96.9 MB/s eta 0:00:00
-2025-04-29T04:38:42.899Z [INFO]: 
-2025-04-29T04:38:42.909Z [INFO]: Downloading soupsieve-2.7-py3-none-any.whl (36 kB)
-2025-04-29T04:38:42.926Z [INFO]: Downloading sqlalchemy-2.0.40-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.1 MB)
-2025-04-29T04:38:42.946Z [INFO]: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.1/3.1 MB 160.3 MB/s eta 0:00:00
-2025-04-29T04:38:42.946Z [INFO]: 
-2025-04-29T04:38:42.957Z [INFO]: Downloading greenlet-3.2.1-cp310-cp310-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (580 kB)
-2025-04-29T04:38:42.966Z [INFO]: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 580.6/580.6 kB 43.3 MB/s eta 0:00:00
-2025-04-29T04:38:42.967Z [INFO]: 
-2025-04-29T04:38:42.977Z [INFO]: Downloading tomli-2.2.1-py3-none-any.whl (14 kB)
-2025-04-29T04:38:43.027Z [INFO]: Downloading trafilatura-2.0.0-py3-none-any.whl (132 kB)
-2025-04-29T04:38:43.044Z [INFO]: Downloading courlan-1.3.2-py3-none-any.whl (33 kB)
-2025-04-29T04:38:43.060Z [INFO]: Downloading babel-2.17.0-py3-none-any.whl (10.2 MB)
-2025-04-29T04:38:43.110Z [INFO]: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.2/10.2 MB 207.8 MB/s eta 0:00:00
-2025-04-29T04:38:43.110Z [INFO]: 
-2025-04-29T04:38:43.121Z [INFO]: Downloading htmldate-1.9.3-py3-none-any.whl (31 kB)
-2025-04-29T04:38:43.135Z [INFO]: Downloading lxml-5.4.0-cp310-cp310-manylinux_2_28_x86_64.whl (5.1 MB)
-2025-04-29T04:38:43.161Z [INFO]: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.1/5.1 MB 204.0 MB/s eta 0:00:00
-2025-04-29T04:38:43.162Z [INFO]: 
-2025-04-29T04:38:43.206Z [INFO]: Downloading justext-3.0.2-py2.py3-none-any.whl (837 kB)
-2025-04-29T04:38:43.215Z [INFO]: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 837.9/837.9 kB 86.9 MB/s eta 0:00:00
-2025-04-29T04:38:43.215Z [INFO]: 
-2025-04-29T04:38:43.227Z [INFO]: Downloading tld-0.13-py2.py3-none-any.whl (263 kB)
-2025-04-29T04:38:43.243Z [INFO]: Downloading lxml_html_clean-0.4.2-py3-none-any.whl (14 kB)
-2025-04-29T04:38:43.256Z [INFO]: Downloading pyproject_hooks-1.2.0-py3-none-any.whl (10 kB)
-2025-04-29T04:38:43.342Z [INFO]: Building wheels for collected packages: repl-nix-workspace
-2025-04-29T04:38:43.343Z [INFO]: Building editable for repl-nix-workspace (pyproject.toml): started
-2025-04-29T04:38:43.572Z [INFO]: Building editable for repl-nix-workspace (pyproject.toml): finished with status 'done'
-2025-04-29T04:38:43.572Z [INFO]: Created wheel for repl-nix-workspace: filename=repl_nix_workspace-0.1.0-0.editable-py3-none-any.whl size=3003 sha256=eec11f8de6320993a72a7166311931bb35f330f7782252e6066d26eeccc95d87
-2025-04-29T04:38:43.573Z [INFO]: Stored in directory: /tmp/pip-ephem-wheel-cache-6bmg468f/wheels/50/41/d3/68140f8dd0b250d4c6b3dd60b8237f13448ca143c17da13fd7
-2025-04-29T04:38:43.574Z [INFO]: Successfully built repl-nix-workspace
-2025-04-29T04:38:47.391Z [INFO]: Installing collected packages: tomli, tld, soupsieve, pyproject-hooks, psycopg2-binary, lxml, gunicorn, greenlet, dnspython, babel, sqlalchemy, lxml_html_clean, email-validator, courlan, build, beautifulsoup4, pip-tools, htmldate, flask-sqlalchemy, justext, trafilatura, repl-nix-workspace
-2025-04-29T04:38:49.775Z [INFO]: 
-2025-04-29T04:38:49.792Z [INFO]: Successfully installed babel-2.17.0 beautifulsoup4-4.13.4 build-1.2.2.post1 courlan-1.3.2 dnspython-2.7.0 email-validator-2.2.0 flask-sqlalchemy-3.1.1 greenlet-3.2.1 gunicorn-23.0.0 htmldate-1.9.3 justext-3.0.2 lxml-5.4.0 lxml_html_clean-0.4.2 pip-tools-7.4.1 psycopg2-binary-2.9.10 pyproject-hooks-1.2.0 repl-nix-workspace-0.1.0 soupsieve-2.7 sqlalchemy-2.0.40 tld-0.13 tomli-2.2.1 trafilatura-2.0.0
-2025-04-29T04:38:50.023Z [INFO]: # Executing command: echo "Build completed on $(date)"
-2025-04-29T04:38:50.025Z [INFO]: Build completed on Tue Apr 29 04:38:50 UTC 2025
-2025-04-29T04:38:51.315Z [INFO]: # Completed phase: build
+2025-04-29T04:45:54.887Z [INFO]: Uninstalling pip-23.0.1:
+2025-04-29T04:45:57.116Z [INFO]: Successfully uninstalled pip-23.0.1
+2025-04-29T04:45:58.075Z [INFO]: Successfully installed pip-25.1
+2025-04-29T04:45:58.431Z [INFO]: # Executing command: pip install -e .
+2025-04-29T04:45:59.099Z [INFO]: Obtaining file:///codebuild/output/src3945508519/src/ExtractBusinessInformation
+2025-04-29T04:45:59.102Z [INFO]: Installing build dependencies: started
+2025-04-29T04:46:04.129Z [INFO]: Installing build dependencies: finished with status 'done'
+2025-04-29T04:46:04.134Z [INFO]: Checking if build backend supports build_editable: started
+2025-04-29T04:46:04.427Z [INFO]: Checking if build backend supports build_editable: finished with status 'done'
+2025-04-29T04:46:04.428Z [INFO]: Getting requirements to build editable: started
+2025-04-29T04:46:04.839Z [INFO]: Getting requirements to build editable: finished with status 'done'
+2025-04-29T04:46:04.840Z [INFO]: Preparing editable metadata (pyproject.toml): started
+2025-04-29T04:46:05.074Z [INFO]: Preparing editable metadata (pyproject.toml): finished with status 'done'
+2025-04-29T04:46:05.200Z [INFO]: Collecting beautifulsoup4>=4.13.4 (from repl-nix-workspace==0.1.0)
+2025-04-29T04:46:05.242Z [INFO]: Downloading beautifulsoup4-4.13.4-py3-none-any.whl.metadata (3.8 kB)
+2025-04-29T04:46:05.298Z [INFO]: Collecting email-validator>=2.2.0 (from repl-nix-workspace==0.1.0)
+2025-04-29T04:46:05.308Z [INFO]: Downloading email_validator-2.2.0-py3-none-any.whl.metadata (25 kB)
+2025-04-29T04:46:05.322Z [INFO]: Requirement already satisfied: flask>=3.1.0 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from repl-nix-workspace==0.1.0) (3.1.0)
+2025-04-29T04:46:05.366Z [INFO]: Collecting flask-sqlalchemy>=3.1.1 (from repl-nix-workspace==0.1.0)
+2025-04-29T04:46:05.376Z [INFO]: Downloading flask_sqlalchemy-3.1.1-py3-none-any.whl.metadata (3.4 kB)
+2025-04-29T04:46:05.444Z [INFO]: Collecting gunicorn>=23.0.0 (from repl-nix-workspace==0.1.0)
+2025-04-29T04:46:05.454Z [INFO]: Downloading gunicorn-23.0.0-py3-none-any.whl.metadata (4.4 kB)
+2025-04-29T04:46:05.507Z [INFO]: Collecting pip-tools>=7.4.1 (from repl-nix-workspace==0.1.0)
+2025-04-29T04:46:05.519Z [INFO]: Downloading pip_tools-7.4.1-py3-none-any.whl.metadata (26 kB)
+2025-04-29T04:46:05.629Z [INFO]: Collecting psycopg2-binary>=2.9.10 (from repl-nix-workspace==0.1.0)
+2025-04-29T04:46:05.639Z [INFO]: Downloading psycopg2_binary-2.9.10-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.9 kB)
+2025-04-29T04:46:05.646Z [INFO]: Requirement already satisfied: requests>=2.32.3 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from repl-nix-workspace==0.1.0) (2.32.3)
+2025-04-29T04:46:05.676Z [INFO]: Collecting trafilatura>=2.0.0 (from repl-nix-workspace==0.1.0)
+2025-04-29T04:46:05.685Z [INFO]: Downloading trafilatura-2.0.0-py3-none-any.whl.metadata (12 kB)
+2025-04-29T04:46:05.725Z [INFO]: Collecting soupsieve>1.2 (from beautifulsoup4>=4.13.4->repl-nix-workspace==0.1.0)
+2025-04-29T04:46:05.735Z [INFO]: Downloading soupsieve-2.7-py3-none-any.whl.metadata (4.6 kB)
+2025-04-29T04:46:05.742Z [INFO]: Requirement already satisfied: typing-extensions>=4.0.0 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from beautifulsoup4>=4.13.4->repl-nix-workspace==0.1.0) (4.13.0)
+2025-04-29T04:46:05.768Z [INFO]: Collecting dnspython>=2.0.0 (from email-validator>=2.2.0->repl-nix-workspace==0.1.0)
+2025-04-29T04:46:05.778Z [INFO]: Downloading dnspython-2.7.0-py3-none-any.whl.metadata (5.8 kB)
+2025-04-29T04:46:05.791Z [INFO]: Requirement already satisfied: idna>=2.0.0 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from email-validator>=2.2.0->repl-nix-workspace==0.1.0) (3.10)
+2025-04-29T04:46:05.794Z [INFO]: Requirement already satisfied: Werkzeug>=3.1 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from flask>=3.1.0->repl-nix-workspace==0.1.0) (3.1.3)
+2025-04-29T04:46:05.794Z [INFO]: Requirement already satisfied: Jinja2>=3.1.2 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from flask>=3.1.0->repl-nix-workspace==0.1.0) (3.1.6)
+2025-04-29T04:46:05.795Z [INFO]: Requirement already satisfied: itsdangerous>=2.2 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from flask>=3.1.0->repl-nix-workspace==0.1.0) (2.2.0)
+2025-04-29T04:46:05.795Z [INFO]: Requirement already satisfied: click>=8.1.3 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from flask>=3.1.0->repl-nix-workspace==0.1.0) (8.1.8)
+2025-04-29T04:46:05.796Z [INFO]: Requirement already satisfied: blinker>=1.9 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from flask>=3.1.0->repl-nix-workspace==0.1.0) (1.9.0)
+2025-04-29T04:46:06.164Z [INFO]: Collecting sqlalchemy>=2.0.16 (from flask-sqlalchemy>=3.1.1->repl-nix-workspace==0.1.0)
+2025-04-29T04:46:06.215Z [INFO]: Downloading sqlalchemy-2.0.40-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (9.6 kB)
+2025-04-29T04:46:06.238Z [INFO]: Requirement already satisfied: packaging in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from gunicorn>=23.0.0->repl-nix-workspace==0.1.0) (24.2)
+2025-04-29T04:46:06.242Z [INFO]: Requirement already satisfied: MarkupSafe>=2.0 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from Jinja2>=3.1.2->flask>=3.1.0->repl-nix-workspace==0.1.0) (3.0.2)
+2025-04-29T04:46:06.292Z [INFO]: Collecting build>=1.0.0 (from pip-tools>=7.4.1->repl-nix-workspace==0.1.0)
+2025-04-29T04:46:06.301Z [INFO]: Downloading build-1.2.2.post1-py3-none-any.whl.metadata (6.5 kB)
+2025-04-29T04:46:06.316Z [INFO]: Requirement already satisfied: pip>=22.2 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from pip-tools>=7.4.1->repl-nix-workspace==0.1.0) (25.1)
+2025-04-29T04:46:06.336Z [INFO]: Collecting pyproject-hooks (from pip-tools>=7.4.1->repl-nix-workspace==0.1.0)
+2025-04-29T04:46:06.382Z [INFO]: Downloading pyproject_hooks-1.2.0-py3-none-any.whl.metadata (1.3 kB)
+2025-04-29T04:46:06.389Z [INFO]: Requirement already satisfied: setuptools in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from pip-tools>=7.4.1->repl-nix-workspace==0.1.0) (78.1.0)
+2025-04-29T04:46:06.389Z [INFO]: Requirement already satisfied: wheel in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from pip-tools>=7.4.1->repl-nix-workspace==0.1.0) (0.45.1)
+2025-04-29T04:46:06.415Z [INFO]: Collecting tomli (from pip-tools>=7.4.1->repl-nix-workspace==0.1.0)
+2025-04-29T04:46:06.425Z [INFO]: Downloading tomli-2.2.1-py3-none-any.whl.metadata (10 kB)
+2025-04-29T04:46:06.440Z [INFO]: Requirement already satisfied: charset-normalizer<4,>=2 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from requests>=2.32.3->repl-nix-workspace==0.1.0) (3.4.1)
+2025-04-29T04:46:06.441Z [INFO]: Requirement already satisfied: urllib3<3,>=1.21.1 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from requests>=2.32.3->repl-nix-workspace==0.1.0) (2.3.0)
+2025-04-29T04:46:06.442Z [INFO]: Requirement already satisfied: certifi>=2017.4.17 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from requests>=2.32.3->repl-nix-workspace==0.1.0) (2025.1.31)
+2025-04-29T04:46:06.644Z [INFO]: Collecting greenlet>=1 (from sqlalchemy>=2.0.16->flask-sqlalchemy>=3.1.1->repl-nix-workspace==0.1.0)
+2025-04-29T04:46:06.655Z [INFO]: Downloading greenlet-3.2.1-cp310-cp310-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (4.1 kB)
+2025-04-29T04:46:06.690Z [INFO]: Collecting courlan>=1.3.2 (from trafilatura>=2.0.0->repl-nix-workspace==0.1.0)
+2025-04-29T04:46:06.738Z [INFO]: Downloading courlan-1.3.2-py3-none-any.whl.metadata (17 kB)
+2025-04-29T04:46:06.778Z [INFO]: Collecting htmldate>=1.9.2 (from trafilatura>=2.0.0->repl-nix-workspace==0.1.0)
+2025-04-29T04:46:06.787Z [INFO]: Downloading htmldate-1.9.3-py3-none-any.whl.metadata (10 kB)
+2025-04-29T04:46:06.818Z [INFO]: Collecting justext>=3.0.1 (from trafilatura>=2.0.0->repl-nix-workspace==0.1.0)
+2025-04-29T04:46:06.829Z [INFO]: Downloading justext-3.0.2-py2.py3-none-any.whl.metadata (7.3 kB)
+2025-04-29T04:46:07.116Z [INFO]: Collecting lxml>=5.3.0 (from trafilatura>=2.0.0->repl-nix-workspace==0.1.0)
+2025-04-29T04:46:07.128Z [INFO]: Downloading lxml-5.4.0-cp310-cp310-manylinux_2_28_x86_64.whl.metadata (3.5 kB)
+2025-04-29T04:46:07.162Z [INFO]: Collecting babel>=2.16.0 (from courlan>=1.3.2->trafilatura>=2.0.0->repl-nix-workspace==0.1.0)
+2025-04-29T04:46:07.171Z [INFO]: Downloading babel-2.17.0-py3-none-any.whl.metadata (2.0 kB)
+2025-04-29T04:46:07.216Z [INFO]: Collecting tld>=0.13 (from courlan>=1.3.2->trafilatura>=2.0.0->repl-nix-workspace==0.1.0)
+2025-04-29T04:46:07.227Z [INFO]: Downloading tld-0.13-py2.py3-none-any.whl.metadata (9.4 kB)
+2025-04-29T04:46:07.236Z [INFO]: Requirement already satisfied: dateparser>=1.1.2 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from htmldate>=1.9.2->trafilatura>=2.0.0->repl-nix-workspace==0.1.0) (1.2.1)
+2025-04-29T04:46:07.247Z [INFO]: Requirement already satisfied: python-dateutil>=2.9.0.post0 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from htmldate>=1.9.2->trafilatura>=2.0.0->repl-nix-workspace==0.1.0) (2.9.0.post0)
+2025-04-29T04:46:07.253Z [INFO]: Requirement already satisfied: pytz>=2024.2 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from dateparser>=1.1.2->htmldate>=1.9.2->trafilatura>=2.0.0->repl-nix-workspace==0.1.0) (2025.2)
+2025-04-29T04:46:07.254Z [INFO]: Requirement already satisfied: regex!=2019.02.19,!=2021.8.27,>=2015.06.24 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from dateparser>=1.1.2->htmldate>=1.9.2->trafilatura>=2.0.0->repl-nix-workspace==0.1.0) (2024.11.6)
+2025-04-29T04:46:07.255Z [INFO]: Requirement already satisfied: tzlocal>=0.2 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from dateparser>=1.1.2->htmldate>=1.9.2->trafilatura>=2.0.0->repl-nix-workspace==0.1.0) (5.2)
+2025-04-29T04:46:07.288Z [INFO]: Collecting lxml_html_clean (from lxml[html_clean]>=4.4.2->justext>=3.0.1->trafilatura>=2.0.0->repl-nix-workspace==0.1.0)
+2025-04-29T04:46:07.298Z [INFO]: Downloading lxml_html_clean-0.4.2-py3-none-any.whl.metadata (2.4 kB)
+2025-04-29T04:46:07.306Z [INFO]: Requirement already satisfied: six>=1.5 in /root/.pyenv/versions/3.10.16/lib/python3.10/site-packages (from python-dateutil>=2.9.0.post0->htmldate>=1.9.2->trafilatura>=2.0.0->repl-nix-workspace==0.1.0) (1.17.0)
+2025-04-29T04:46:07.345Z [INFO]: Downloading beautifulsoup4-4.13.4-py3-none-any.whl (187 kB)
+2025-04-29T04:46:07.403Z [INFO]: Downloading email_validator-2.2.0-py3-none-any.whl (33 kB)
+2025-04-29T04:46:07.419Z [INFO]: Downloading dnspython-2.7.0-py3-none-any.whl (313 kB)
+2025-04-29T04:46:07.442Z [INFO]: Downloading flask_sqlalchemy-3.1.1-py3-none-any.whl (25 kB)
+2025-04-29T04:46:07.458Z [INFO]: Downloading gunicorn-23.0.0-py3-none-any.whl (85 kB)
+2025-04-29T04:46:07.474Z [INFO]: Downloading pip_tools-7.4.1-py3-none-any.whl (61 kB)
+2025-04-29T04:46:07.489Z [INFO]: Downloading build-1.2.2.post1-py3-none-any.whl (22 kB)
+2025-04-29T04:46:07.505Z [INFO]: Downloading psycopg2_binary-2.9.10-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.0 MB)
+2025-04-29T04:46:07.533Z [INFO]: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.0/3.0 MB 111.6 MB/s eta 0:00:00
+2025-04-29T04:46:07.533Z [INFO]: 
+2025-04-29T04:46:07.543Z [INFO]: Downloading soupsieve-2.7-py3-none-any.whl (36 kB)
+2025-04-29T04:46:07.560Z [INFO]: Downloading sqlalchemy-2.0.40-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.1 MB)
+2025-04-29T04:46:07.579Z [INFO]: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.1/3.1 MB 193.3 MB/s eta 0:00:00
+2025-04-29T04:46:07.579Z [INFO]: 
+2025-04-29T04:46:07.590Z [INFO]: Downloading greenlet-3.2.1-cp310-cp310-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (580 kB)
+2025-04-29T04:46:07.601Z [INFO]: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 580.6/580.6 kB 36.8 MB/s eta 0:00:00
+2025-04-29T04:46:07.602Z [INFO]: 
+2025-04-29T04:46:07.611Z [INFO]: Downloading tomli-2.2.1-py3-none-any.whl (14 kB)
+2025-04-29T04:46:07.665Z [INFO]: Downloading trafilatura-2.0.0-py3-none-any.whl (132 kB)
+2025-04-29T04:46:07.682Z [INFO]: Downloading courlan-1.3.2-py3-none-any.whl (33 kB)
+2025-04-29T04:46:07.698Z [INFO]: Downloading babel-2.17.0-py3-none-any.whl (10.2 MB)
+2025-04-29T04:46:07.743Z [INFO]: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.2/10.2 MB 238.5 MB/s eta 0:00:00
+2025-04-29T04:46:07.743Z [INFO]: 
+2025-04-29T04:46:07.753Z [INFO]: Downloading htmldate-1.9.3-py3-none-any.whl (31 kB)
+2025-04-29T04:46:07.768Z [INFO]: Downloading lxml-5.4.0-cp310-cp310-manylinux_2_28_x86_64.whl (5.1 MB)
+2025-04-29T04:46:07.798Z [INFO]: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.1/5.1 MB 181.1 MB/s eta 0:00:00
+2025-04-29T04:46:07.798Z [INFO]: 
+2025-04-29T04:46:07.855Z [INFO]: Downloading justext-3.0.2-py2.py3-none-any.whl (837 kB)
+2025-04-29T04:46:07.865Z [INFO]: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 837.9/837.9 kB 75.7 MB/s eta 0:00:00
+2025-04-29T04:46:07.866Z [INFO]: 
+2025-04-29T04:46:07.876Z [INFO]: Downloading tld-0.13-py2.py3-none-any.whl (263 kB)
+2025-04-29T04:46:07.893Z [INFO]: Downloading lxml_html_clean-0.4.2-py3-none-any.whl (14 kB)
+2025-04-29T04:46:07.907Z [INFO]: Downloading pyproject_hooks-1.2.0-py3-none-any.whl (10 kB)
+2025-04-29T04:46:07.999Z [INFO]: Building wheels for collected packages: repl-nix-workspace
+2025-04-29T04:46:08.000Z [INFO]: Building editable for repl-nix-workspace (pyproject.toml): started
+2025-04-29T04:46:08.255Z [INFO]: Building editable for repl-nix-workspace (pyproject.toml): finished with status 'done'
+2025-04-29T04:46:08.256Z [INFO]: Created wheel for repl-nix-workspace: filename=repl_nix_workspace-0.1.0-0.editable-py3-none-any.whl size=3003 sha256=7bd8197890d18836d0fb6eeb241bc2fb7b2fa8afb4fd8a79dad902a0a20f4ed3
+2025-04-29T04:46:08.256Z [INFO]: Stored in directory: /tmp/pip-ephem-wheel-cache-qq8zmomx/wheels/ed/44/81/abe467a7c427d2469d047d8d6b844b5ea2877fd1dab36bca61
+2025-04-29T04:46:08.258Z [INFO]: Successfully built repl-nix-workspace
+2025-04-29T04:46:12.251Z [INFO]: Installing collected packages: tomli, tld, soupsieve, pyproject-hooks, psycopg2-binary, lxml, gunicorn, greenlet, dnspython, babel, sqlalchemy, lxml_html_clean, email-validator, courlan, build, beautifulsoup4, pip-tools, htmldate, flask-sqlalchemy, justext, trafilatura, repl-nix-workspace
+2025-04-29T04:46:14.825Z [INFO]: 
+2025-04-29T04:46:14.843Z [INFO]: Successfully installed babel-2.17.0 beautifulsoup4-4.13.4 build-1.2.2.post1 courlan-1.3.2 dnspython-2.7.0 email-validator-2.2.0 flask-sqlalchemy-3.1.1 greenlet-3.2.1 gunicorn-23.0.0 htmldate-1.9.3 justext-3.0.2 lxml-5.4.0 lxml_html_clean-0.4.2 pip-tools-7.4.1 psycopg2-binary-2.9.10 pyproject-hooks-1.2.0 repl-nix-workspace-0.1.0 soupsieve-2.7 sqlalchemy-2.0.40 tld-0.13 tomli-2.2.1 trafilatura-2.0.0
+2025-04-29T04:46:15.269Z [INFO]: # Executing command: echo "Creating start script"
+                                 Creating start script
+2025-04-29T04:46:15.269Z [INFO]: # Executing command: echo '#!/bin/bash' > start_app.sh
+                                 # Executing command: echo 'cd "$CODEBUILD_SRC_DIR"' >> start_app.sh
+                                 # Executing command: echo 'gunicorn --bind 0.0.0.0:8080 --workers 3 main:app' >> start_app.sh
+                                 # Executing command: chmod +x start_app.sh
+2025-04-29T04:46:15.270Z [INFO]: # Executing command: echo "Build completed on $(date)"
+2025-04-29T04:46:15.273Z [INFO]: Build completed on Tue Apr 29 04:46:15 UTC 2025
+2025-04-29T04:46:15.273Z [INFO]: # Starting phase: postBuild
+                                 # Executing command: echo "Testing app startup"
+                                 Testing app startup
+                                 # Executing command: python -m pytest -xvs || echo "Skipping tests"
+2025-04-29T04:46:15.367Z [WARNING]: /root/.pyenv/versions/3.10.16/bin/python: No module named pytest
+2025-04-29T04:46:15.372Z [INFO]: Skipping tests
+                                 # Completed phase: postBuild
+2025-04-29T04:46:16.749Z [INFO]: # Completed phase: build
                                  ## Completed Backend Build
-2025-04-29T04:38:51.320Z [INFO]: ## Starting Frontend Build
+2025-04-29T04:46:16.753Z [INFO]: ## Starting Frontend Build
                                  # Starting phase: build
-                                 # Executing command: echo "No frontend build needed"
-                                 No frontend build needed
-2025-04-29T04:38:51.320Z [INFO]: # Completed phase: build
+                                 # Executing command: echo "Preparing static assets"
+2025-04-29T04:46:16.754Z [INFO]: Preparing static assets
+                                 # Executing command: mkdir -p static/css
+2025-04-29T04:46:16.755Z [INFO]: # Executing command: mkdir -p static/js
+2025-04-29T04:46:16.756Z [INFO]: # Executing command: mkdir -p static/images
+2025-04-29T04:46:16.758Z [INFO]: # Completed phase: build
                                  ## Completed Frontend Build
-2025-04-29T04:38:51.619Z [INFO]: ## Build completed successfully
-2025-04-29T04:38:51.620Z [INFO]: # Starting caching...
-2025-04-29T04:38:51.620Z [INFO]: Nothing to cache
-2025-04-29T04:38:51.620Z [INFO]: # Caching completed
-2025-04-29T04:38:51.639Z [WARNING]: !! No index.html detected in deploy folder: /codebuild/output/src3807626924/src/ExtractBusinessInformation/
-2025-04-29T04:38:51.639Z [INFO]: # Starting build artifact upload process...
-2025-04-29T04:38:51.794Z [INFO]: # Uploading build artifact '__artifacts.zip'...
-2025-04-29T04:38:51.924Z [INFO]: # Build artifact upload completed
-2025-04-29T04:38:51.924Z [INFO]: # Starting environment caching...
-2025-04-29T04:38:51.924Z [INFO]: # Uploading environment cache artifact...
-2025-04-29T04:38:52.005Z [INFO]: # Uploaded environment cache artifact
-2025-04-29T04:38:52.006Z [INFO]: # Environment caching completed
+2025-04-29T04:46:17.017Z [INFO]: ## Build completed successfully
+2025-04-29T04:46:17.019Z [INFO]: # Starting caching...
+2025-04-29T04:46:17.019Z [INFO]: Nothing to cache
+2025-04-29T04:46:17.019Z [INFO]: # Caching completed
+2025-04-29T04:46:17.043Z [WARNING]: !! No index.html detected in deploy folder: /codebuild/output/src3945508519/src/ExtractBusinessInformation/
+2025-04-29T04:46:17.044Z [INFO]: # Starting build artifact upload process...
+2025-04-29T04:46:17.218Z [INFO]: # Uploading build artifact '__artifacts.zip'...
+2025-04-29T04:46:17.368Z [INFO]: # Build artifact upload completed
+2025-04-29T04:46:17.369Z [INFO]: # Starting environment caching...
+2025-04-29T04:46:17.369Z [INFO]: # Uploading environment cache artifact...
+2025-04-29T04:46:17.438Z [INFO]: # Uploaded environment cache artifact
+2025-04-29T04:46:17.438Z [INFO]: # Environment caching completed
 
