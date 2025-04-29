@@ -1,0 +1,10 @@
+include *.txt
+include *.md
+include *.yml
+include *.yaml
+include Procfile
+include .ebextensions/**/*
+include .platform/**/*
+include .elasticbeanstalk/**/*
+recursive-include templates *
+recursive-include static *

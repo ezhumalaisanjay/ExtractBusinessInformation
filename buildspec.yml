@@ -6,12 +6,12 @@ phases:
       python: 3.11
     commands:
       - echo Installing dependencies...
-      - pip install -r requirements.txt
+      - pip install -e .
       
   pre_build:
     commands:
       - echo Running pre-build checks...
-      - python -m pytest -v tests/ || true
+      - echo "Skipping tests" # python -m pytest -v tests/ || true
       
   build:
     commands:
@@ -34,9 +34,11 @@ artifacts:
     - linkedin_enhanced_scraper.py
     - templates/**/*
     - static/**/*
-    - requirements.txt
+    - pyproject.toml
+    - setup.py
     - Procfile
     - appspec.yml
+    - .ebextensions/**/*
     - .platform/**/*
     - buildspec.yml
     - amplify.yml

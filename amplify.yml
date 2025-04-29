@@ -3,7 +3,7 @@ backend:
   phases:
     build:
       commands:
-        - pip install -r requirements.txt
+        - pip install -e .
         - echo "Build completed on $(date)"
   artifacts:
     baseDirectory: /
