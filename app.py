@@ -3,6 +3,7 @@ import logging
 from flask import Flask, render_template, request, jsonify, flash, redirect, url_for
 from scraper import scrape_website
 from linkedin_finder import extract_linkedin_url, find_and_extract_linkedin_about
+from authenticated_linkedin_scraper import extract_all_company_data
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -11,6 +12,10 @@ logger = logging.getLogger(__name__)
 # Initialize Flask app
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "dev-secret-key")
+
+# Set LinkedIn credentials from environment variables or default to user-provided values
+os.environ['LINKEDIN_EMAIL'] = os.environ.get('LINKEDIN_EMAIL', 'ezhumalaisanjay05@gmail.com')
+os.environ['LINKEDIN_PASSWORD'] = os.environ.get('LINKEDIN_PASSWORD', 'Sanjay@2023')
 
 @app.route('/', methods=['GET'])
 def index():
@@ -27,6 +32,7 @@ def scrape():
     """Handle website scraping requests"""
     url = request.form.get('url')
     mode = request.form.get('mode', 'direct')  # Default to direct scraping
+    use_auth = request.form.get('use_auth', 'false') == 'true'
     
     if not url:
         flash('Please enter a valid URL', 'danger')
@@ -36,11 +42,37 @@ def scrape():
     if not url.startswith(('http://', 'https://')):
         url = 'https://' + url
 
-    logger.debug(f"Scraping URL: {url} in mode: {mode}")
+    logger.debug(f"Scraping URL: {url} in mode: {mode}, use_auth: {use_auth}")
     
     try:
+        # Use authenticated scraping for LinkedIn if requested
+        if use_auth and ('linkedin.com' in url):
+            logger.info(f"Using authenticated scraping for LinkedIn URL: {url}")
+            enhanced_data = extract_all_company_data(url)
+            
+            # Create result structure compatible with our templates
+            result = {
+                'company_name': "LinkedIn Company",
+                'description': "Data extracted with LinkedIn authentication",
+                'linkedin_data': enhanced_data
+            }
+            
+            # Try to get a better company name
+            if enhanced_data.get('people', {}).get('leaders'):
+                for leader in enhanced_data['people']['leaders']:
+                    if 'title' in leader and ('CEO' in leader['title'] or 'Founder' in leader['title']):
+                        company_name = leader['name'].split(' at ')[-1] if ' at ' in leader['name'] else None
+                        if company_name:
+                            result['company_name'] = company_name
+            
+            flash('Successfully extracted LinkedIn data using authentication', 'success')
+            return render_template('results.html', 
+                                  data=result, 
+                                  url=url,
+                                  authenticated=True)
+        
         # Direct scraping mode (LinkedIn or any website)
-        if mode == 'direct':
+        elif mode == 'direct':
             result = scrape_website(url)
             if result is None:
                 flash('Failed to extract data from the website', 'danger')
@@ -61,12 +93,33 @@ def scrape():
             result = linkedin_result["company_data"]
             linkedin_url = linkedin_result["linkedin_url"]
             
-            flash(f'Successfully found and extracted LinkedIn profile: {linkedin_url}', 'success')
+            # If we found a LinkedIn URL and authentication is enabled, use authenticated scraping
+            if use_auth and linkedin_url:
+                logger.info(f"Using authenticated scraping for found LinkedIn URL: {linkedin_url}")
+                enhanced_data = extract_all_company_data(linkedin_url)
+                
+                # Merge the enhanced data with existing data
+                if 'linkedin_data' not in result:
+                    result['linkedin_data'] = {}
+                
+                # Add enhanced data
+                if enhanced_data.get('posts'):
+                    result['linkedin_data']['posts'] = enhanced_data['posts']
+                if enhanced_data.get('jobs'):
+                    result['linkedin_data']['jobs'] = enhanced_data['jobs']
+                if enhanced_data.get('people'):
+                    result['linkedin_data']['people'] = enhanced_data['people']
+                
+                flash(f'Successfully found and extracted LinkedIn profile with authentication: {linkedin_url}', 'success')
+            else:
+                flash(f'Successfully found and extracted LinkedIn profile: {linkedin_url}', 'success')
+            
             return render_template('results.html', 
                                   data=result, 
                                   url=url, 
                                   linkedin_url=linkedin_url,
-                                  source_website=url)
+                                  source_website=url,
+                                  authenticated=use_auth)
         
         else:
             flash(f'Invalid scraping mode: {mode}', 'danger')
@@ -90,14 +143,43 @@ def api_scrape():
     
     url = data['url']
     mode = data.get('mode', 'direct')  # Default to direct scraping
+    use_auth = data.get('use_auth', False)  # Authentication option
     
     # Add http:// prefix if not present
     if not url.startswith(('http://', 'https://')):
         url = 'https://' + url
     
     try:
+        # Authenticated LinkedIn scraping mode
+        if use_auth and ('linkedin.com' in url):
+            logger.info(f"API: Using authenticated scraping for LinkedIn URL: {url}")
+            enhanced_data = extract_all_company_data(url)
+            
+            # Create result structure
+            result = {
+                'company_name': "LinkedIn Company",
+                'description': "Data extracted with LinkedIn authentication",
+                'linkedin_data': enhanced_data,
+                'authenticated': True
+            }
+            
+            # Try to get a better company name
+            if enhanced_data.get('people', {}).get('leaders'):
+                for leader in enhanced_data['people']['leaders']:
+                    if 'title' in leader and ('CEO' in leader['title'] or 'Founder' in leader['title']):
+                        company_name = leader['name'].split(' at ')[-1] if ' at ' in leader['name'] else None
+                        if company_name:
+                            result['company_name'] = company_name
+            
+            return jsonify({
+                'success': True,
+                'data': result,
+                'url': url,
+                'authenticated': True
+            })
+            
         # Direct scraping mode
-        if mode == 'direct':
+        elif mode == 'direct':
             result = scrape_website(url)
             if result is None:
                 return jsonify({
@@ -122,12 +204,40 @@ def api_scrape():
                     'linkedin_url': linkedin_result.get('linkedin_url')
                 }), 404
             
-            return jsonify({
-                'success': True,
-                'website_url': url,
-                'linkedin_url': linkedin_result["linkedin_url"],
-                'data': linkedin_result["company_data"]
-            })
+            # If we found a LinkedIn URL and authentication is enabled, use authenticated scraping
+            if use_auth and linkedin_result.get("linkedin_url"):
+                linkedin_url = linkedin_result["linkedin_url"]
+                logger.info(f"API: Using authenticated scraping for found LinkedIn URL: {linkedin_url}")
+                enhanced_data = extract_all_company_data(linkedin_url)
+                
+                # Merge the enhanced data with existing data
+                company_data = linkedin_result["company_data"]
+                if 'linkedin_data' not in company_data:
+                    company_data['linkedin_data'] = {}
+                
+                # Add enhanced data
+                if enhanced_data.get('posts'):
+                    company_data['linkedin_data']['posts'] = enhanced_data['posts']
+                if enhanced_data.get('jobs'):
+                    company_data['linkedin_data']['jobs'] = enhanced_data['jobs']
+                if enhanced_data.get('people'):
+                    company_data['linkedin_data']['people'] = enhanced_data['people']
+                
+                return jsonify({
+                    'success': True,
+                    'website_url': url,
+                    'linkedin_url': linkedin_url,
+                    'data': company_data,
+                    'authenticated': True
+                })
+            else:
+                # Standard non-authenticated response
+                return jsonify({
+                    'success': True,
+                    'website_url': url,
+                    'linkedin_url': linkedin_result["linkedin_url"],
+                    'data': linkedin_result["company_data"]
+                })
             
         else:
             return jsonify({
