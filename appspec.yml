@@ -1,0 +1,19 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /var/app/current
+permissions:
+  - object: /var/app/current
+    pattern: "**"
+    owner: webapp
+    group: webapp
+hooks:
+  BeforeInstall:
+    - location: .platform/hooks/predeploy/01_setup.sh
+      timeout: 300
+      runas: root
+  AfterInstall:
+    - location: .platform/hooks/postdeploy/01_migrate.sh
+      timeout: 300
+      runas: root
