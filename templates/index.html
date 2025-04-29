@@ -3,199 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Business Website Scraper</title>
+    <title>LinkedIn Business Information Extractor</title>
     <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+        }
+        .container {
+            max-width: 800px;
+        }
+        .section {
+            background-color: #1a1f24;
+            border-radius: 6px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .feature-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid #30363d;
+        }
+        .feature-item:last-child {
+            border-bottom: none;
+        }
+        .btn-primary {
+            background-color: #1f6feb;
+            border-color: #1f6feb;
+        }
+        .btn-primary:hover {
+            background-color: #388bfd;
+            border-color: #388bfd;
+        }
+        .btn-block {
+            width: 100%;
+        }
+        .check-icon {
+            color: #3fb950;
+        }
+        h1, h2, h3 {
+            color: #e6edf3;
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="/">
-                <i data-feather="search"></i> Business Scraper
-            </a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/">Single URL</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/batch">Batch Process</a>
-                    </li>
-                </ul>
+    <div class="container py-5">
+        <header class="text-center mb-5">
+            <h1 class="display-4 mb-3">LinkedIn Business Information Extractor</h1>
+            <p class="lead">A comprehensive tool for extracting business intelligence from LinkedIn company profiles</p>
+        </header>
+
+        <div class="section">
+            <h2 class="mb-4 text-center">Get Started</h2>
+            <p class="mb-4 text-center">Use our tool to extract detailed business information from LinkedIn company profiles.</p>
+            
+            <div class="d-grid gap-3">
+                <a href="{{ url_for('main.extract_data') }}" class="btn btn-primary btn-lg">Extract LinkedIn Data</a>
+                <a href="{{ url_for('main.batch') }}" class="btn btn-outline-secondary btn-lg">Batch Process URLs</a>
             </div>
         </div>
-    </nav>
 
-    <main class="container my-5">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Extract Business Information</h3>
-                    </div>
-                    <div class="card-body">
-                        {% with messages = get_flashed_messages(with_categories=true) %}
-                            {% if messages %}
-                                {% for category, message in messages %}
-                                    <div class="alert alert-{{ category }}">{{ message }}</div>
-                                {% endfor %}
-                            {% endif %}
-                        {% endwith %}
-
-                        <p class="lead mb-4">Enter a business website URL to extract company information, contact details, services, and products. For more detailed company history, founding dates, funding, and operational data, try scraping a LinkedIn company page.</p>
-                        
-                        <form action="{{ url_for('scrape.scrape') }}" method="POST">
-                            <div class="input-group mb-3">
-                                <input type="text" class="form-control" name="url" placeholder="https://example.com or linkedin.com/company/microsoft" required>
-                                <button class="btn btn-primary" type="submit">
-                                    <i data-feather="search"></i> Scrape
-                                </button>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="mode" id="mode-direct" value="direct" checked>
-                                    <label class="form-check-label" for="mode-direct">
-                                        Direct Scraping
-                                    </label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="mode" id="mode-find-linkedin" value="find_linkedin">
-                                    <label class="form-check-label" for="mode-find-linkedin">
-                                        Find & Extract LinkedIn
-                                    </label>
-                                </div>
-                                
-                                <div class="mt-2" id="mode-description">
-                                    <div id="direct-mode-desc">
-                                        <small class="text-muted">
-                                            <i data-feather="info" class="feather-sm text-info"></i> 
-                                            Direct Scraping: Extract information directly from the provided URL
-                                        </small>
-                                    </div>
-                                    <div id="linkedin-mode-desc" style="display: none;">
-                                        <small class="text-muted">
-                                            <i data-feather="linkedin" class="feather-sm text-info"></i> 
-                                            LinkedIn Finder: Enter a company website URL, and we'll find their LinkedIn profile and extract detailed information from it
-                                        </small>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="mb-3 form-check">
-                                <input type="checkbox" class="form-check-input" id="use-auth" name="use_auth" value="true">
-                                <label class="form-check-label" for="use-auth">
-                                    <i data-feather="unlock" class="feather-sm text-success me-1"></i>
-                                    Use authenticated access for LinkedIn (gets more complete data)
-                                </label>
-                                <div class="mt-1">
-                                    <small class="text-muted">
-                                        Using LinkedIn authentication to extract more comprehensive data including posts, jobs, and employee information that's normally restricted.
-                                    </small>
-                                </div>
-                            </div>
-                            
-                            <div class="form-text mb-3">
-                                <i data-feather="info" class="feather-sm text-info"></i> 
-                                Our advanced scraper can extract detailed company history, founding dates, funding information, and operational timelines
-                            </div>
-                        </form>
-                        
-                        <div class="alert alert-info" role="alert">
-                            <h5><i data-feather="linkedin" class="me-2"></i> Enhanced LinkedIn Scraping!</h5>
-                            <p>To get detailed company information including founding dates, history, operational timeline, funding, revenue, and more, try scraping LinkedIn company pages.</p>
-                            <p>For example:</p>
-                            <ul>
-                                <li>linkedin.com/company/microsoft</li>
-                                <li>linkedin.com/company/apple</li>
-                                <li>linkedin.com/company/amazon</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <div class="small text-muted">
-                            <i data-feather="info" class="feather-sm"></i> 
-                            Tip: For best results, use the company's homepage URL
-                        </div>
-                    </div>
+        <div class="section">
+            <h2 class="mb-4 text-center">Features</h2>
+            
+            <div class="feature-item d-flex align-items-center">
+                <div class="me-3">
+                    <i data-feather="check-circle" class="check-icon"></i>
                 </div>
-
-                <div class="card mt-4">
-                    <div class="card-header">
-                        <h4>API Usage</h4>
-                    </div>
-                    <div class="card-body">
-                        <p>You can also use our API endpoints to extract business information programmatically:</p>
-                        
-                        <h5 class="mt-3">Direct Scraping</h5>
-                        <pre><code>POST /api/scrape
-Content-Type: application/json
-
-{
-  "url": "https://example.com",
-  "mode": "direct",  // Optional, defaults to "direct"
-  "use_auth": false  // Optional, use LinkedIn authentication (if applicable)
-}</code></pre>
-
-                        <h5 class="mt-3">Find LinkedIn & Extract</h5>
-                        <pre><code>POST /api/scrape
-Content-Type: application/json
-
-{
-  "url": "https://example.com", 
-  "mode": "find_linkedin",  // Find LinkedIn URL and extract data
-  "use_auth": true  // Optional, use LinkedIn authentication for more data
-}</code></pre>
-
-                        <h5 class="mt-3">LinkedIn Authenticated Scraping</h5>
-                        <pre><code>POST /api/scrape
-Content-Type: application/json
-
-{
-  "url": "https://linkedin.com/company/microsoft",
-  "use_auth": true  // Use LinkedIn credentials to extract more data
-}</code></pre>
-
-                        <h5 class="mt-3">Just Find LinkedIn URL</h5>
-                        <pre><code>POST /api/find_linkedin
-Content-Type: application/json
-
-{
-  "url": "https://example.com"  // Returns only the LinkedIn URL without scraping it
-}</code></pre>
-
-                        <h5 class="mt-3">Batch Processing</h5>
-                        <pre><code>POST /api/batch
-Content-Type: application/json
-
-{
-  "urls": [
-    "https://example1.com",
-    "https://example2.com",
-    "https://example3.com"
-  ],
-  "mode": "find_linkedin"  // Options: "find_linkedin", "linkedin_only", "direct"
-}</code></pre>
-                        <div class="mt-2">
-                            <a href="/batch" class="btn btn-sm btn-primary">
-                                <i data-feather="layers"></i> Try Batch Processing
-                            </a>
-                        </div>
-                    </div>
+                <div>Company overview and about section</div>
+            </div>
+            
+            <div class="feature-item d-flex align-items-center">
+                <div class="me-3">
+                    <i data-feather="check-circle" class="check-icon"></i>
                 </div>
+                <div>Recent posts and their summaries</div>
+            </div>
+            
+            <div class="feature-item d-flex align-items-center">
+                <div class="me-3">
+                    <i data-feather="check-circle" class="check-icon"></i>
+                </div>
+                <div>Job openings and opportunities</div>
+            </div>
+            
+            <div class="feature-item d-flex align-items-center">
+                <div class="me-3">
+                    <i data-feather="check-circle" class="check-icon"></i>
+                </div>
+                <div>Company people and leadership team</div>
+            </div>
+            
+            <div class="feature-item d-flex align-items-center">
+                <div class="me-3">
+                    <i data-feather="check-circle" class="check-icon"></i>
+                </div>
+                <div>Batch processing for multiple companies</div>
             </div>
         </div>
-    </main>
-
-    <footer class="bg-dark text-light py-4 mt-5">
-        <div class="container text-center">
-            <p>&copy; 2023 Business Scraper | Extracts structured business information from websites</p>
-        </div>
-    </footer>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Feather icons
+            feather.replace();
+        });
+    </script>
 </body>
 </html>

@@ -12,8 +12,13 @@ main_bp = Blueprint('main', __name__)
 
 @main_bp.route('/')
 def index():
-    """Render the main page with URL input form"""
+    """Render the main landing page"""
     return render_template('index.html')
+
+@main_bp.route('/extract')
+def extract_data():
+    """Render the LinkedIn extraction form page"""
+    return render_template('linkedin_form.html')
 
 @main_bp.route('/about')
 def about():
@@ -23,7 +28,7 @@ def about():
 @main_bp.route('/batch')
 def batch():
     """Render the batch processing page"""
-    return render_template('batch.html')
+    return render_template('batch_form.html')
 
 @main_bp.route('/health')
 def health_check():
