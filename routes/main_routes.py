@@ -53,11 +53,10 @@ def about():
     """Render the about page"""
     return render_template('about.html')
 
-@main_bp.route('/batch/')
-@main_bp.route('/batch')
+@main_bp.route('/batch/', strict_slashes=False)
 def batch():
     """Render the batch processing page"""
-    return render_template('batch_form.html')
+    return render_template('batch.html')
 
 @main_bp.route('/health')
 def health_check():
