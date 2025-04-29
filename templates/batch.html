@@ -217,7 +217,7 @@ Content-Type: application/json
                 submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
                 
                 // Send batch request
-                fetch('/api/batch', {
+                fetch('{{ url_for('api.batch_process') }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

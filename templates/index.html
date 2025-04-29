@@ -45,7 +45,7 @@
 
                         <p class="lead mb-4">Enter a business website URL to extract company information, contact details, services, and products. For more detailed company history, founding dates, funding, and operational data, try scraping a LinkedIn company page.</p>
                         
-                        <form action="{{ url_for('scrape') }}" method="POST">
+                        <form action="{{ url_for('scrape.scrape') }}" method="POST">
                             <div class="input-group mb-3">
                                 <input type="text" class="form-control" name="url" placeholder="https://example.com or linkedin.com/company/microsoft" required>
                                 <button class="btn btn-primary" type="submit">
