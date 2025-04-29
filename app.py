@@ -3,6 +3,7 @@ import logging
 from flask import Flask, render_template, request, jsonify, flash, redirect, url_for
 from scraper import scrape_website
 from linkedin_finder import extract_linkedin_url, find_and_extract_linkedin_about
+import linkedin_auth
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -181,6 +182,70 @@ def api_find_linkedin():
             'success': False,
             'error': str(e)
         }), 500
+
+@app.route('/linkedin-auth', methods=['GET', 'POST'])
+def linkedin_auth_page():
+    """Handle LinkedIn authentication for scraping"""
+    # Check if we're already authenticated
+    is_authenticated = linkedin_auth.is_authenticated()
+    username = linkedin_auth.get_auth_username()
+    auth_error = linkedin_auth.get_auth_error()
+    
+    # If this is a POST request (login attempt)
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
+        if not username or not password:
+            flash('Please provide both username and password', 'danger')
+            return render_template('linkedin_auth.html', 
+                                  is_authenticated=is_authenticated,
+                                  username=username,
+                                  auth_error=auth_error)
+        
+        # Set credentials and try to authenticate
+        linkedin_auth.set_credentials(username, password)
+        auth_success = linkedin_auth.authenticate()
+        
+        if auth_success:
+            flash('Successfully authenticated with LinkedIn!', 'success')
+            return redirect(url_for('index'))
+        else:
+            # Authentication failed
+            auth_error = linkedin_auth.get_auth_error()
+            flash(f'Authentication failed: {auth_error}', 'danger')
+            
+            return render_template('linkedin_auth.html',
+                                  is_authenticated=False,
+                                  username=username,
+                                  auth_error=auth_error)
+    
+    # GET request - show the login form
+    return render_template('linkedin_auth.html',
+                          is_authenticated=is_authenticated,
+                          username=username,
+                          auth_error=auth_error)
+
+@app.route('/linkedin-logout', methods=['POST'])
+def linkedin_logout():
+    """Clear LinkedIn authentication"""
+    linkedin_auth.clear_credentials()
+    flash('LinkedIn credentials cleared', 'info')
+    return redirect(url_for('index'))
+
+@app.route('/api/linkedin-auth-status', methods=['GET'])
+def api_linkedin_auth_status():
+    """API endpoint for checking LinkedIn authentication status"""
+    is_authenticated = linkedin_auth.is_authenticated()
+    username = linkedin_auth.get_auth_username()
+    auth_error = linkedin_auth.get_auth_error()
+    
+    return jsonify({
+        'success': True,
+        'is_authenticated': is_authenticated,
+        'username': username,
+        'auth_error': auth_error
+    })
 
 @app.route('/api/batch', methods=['POST'])
 def api_batch_process():
