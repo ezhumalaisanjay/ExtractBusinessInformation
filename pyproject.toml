@@ -1,8 +1,8 @@
 [project]
 name = "repl-nix-workspace"
 version = "0.1.0"
-description = "Add your description here"
-requires-python = ">=3.11"
+description = "LinkedIn Scraper - Extract structured business information from LinkedIn"
+requires-python = ">=3.10"
 dependencies = [
     "beautifulsoup4>=4.13.4",
     "email-validator>=2.2.0",
