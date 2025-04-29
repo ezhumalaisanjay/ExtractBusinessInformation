@@ -40,6 +40,11 @@ def scrape():
     logger.debug(f"Scraping URL: {url} in mode: {mode}")
     
     try:
+        # Get authentication status to pass to template
+        is_authenticated = linkedin_auth.is_authenticated()
+        auth_username = linkedin_auth.get_auth_username()
+        auth_error = linkedin_auth.get_auth_error()
+        
         # Direct scraping mode (LinkedIn or any website)
         if mode == 'direct':
             result = scrape_website(url)
@@ -47,7 +52,12 @@ def scrape():
                 flash('Failed to extract data from the website', 'danger')
                 return redirect(url_for('index'))
             
-            return render_template('results.html', data=result, url=url)
+            return render_template('results.html', 
+                                  data=result, 
+                                  url=url,
+                                  is_authenticated=is_authenticated,
+                                  auth_username=auth_username,
+                                  auth_error=auth_error)
         
         # Find LinkedIn URL from company website and then scrape
         elif mode == 'find_linkedin':
@@ -63,11 +73,20 @@ def scrape():
             linkedin_url = linkedin_result["linkedin_url"]
             
             flash(f'Successfully found and extracted LinkedIn profile: {linkedin_url}', 'success')
+            
+            # Check if authentication is required for better data
+            auth_required = result.get('authentication_required', "false")
+            if auth_required == "true" and not is_authenticated:
+                flash('LinkedIn login required for full data access. Some information is limited.', 'warning')
+            
             return render_template('results.html', 
                                   data=result, 
                                   url=url, 
                                   linkedin_url=linkedin_url,
-                                  source_website=url)
+                                  source_website=url,
+                                  is_authenticated=is_authenticated,
+                                  auth_username=auth_username,
+                                  auth_error=auth_error)
         
         else:
             flash(f'Invalid scraping mode: {mode}', 'danger')

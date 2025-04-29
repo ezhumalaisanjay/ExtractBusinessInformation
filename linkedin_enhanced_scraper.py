@@ -644,21 +644,62 @@ def extract_all_enhanced_data(linkedin_url):
     Returns:
         Dictionary with all enhanced data
     """
-    enhanced_data = {}
+    # Get authentication status
+    is_authenticated = linkedin_auth.is_authenticated()
+    auth_username = linkedin_auth.get_auth_username()
+    auth_error = linkedin_auth.get_auth_error()
+    
+    enhanced_data = {
+        'authentication_status': {
+            'is_authenticated': is_authenticated,
+            'username': auth_username,
+            'error': auth_error
+        }
+    }
+    
+    # Track if any part requires authentication
+    auth_required = False
     
     # Extract posts
     posts_data = extract_posts(linkedin_url)
     if posts_data:
-        enhanced_data['posts'] = posts_data
+        if isinstance(posts_data, dict):
+            # Check if post count indicates login required
+            post_count = posts_data.get('post_count', '')
+            if isinstance(post_count, str) and 'login required' in post_count.lower():
+                auth_required = True
+            
+            # Add posts data to enhanced data
+            enhanced_data.update(posts_data)
     
     # Extract job openings
     jobs_data = extract_job_openings(linkedin_url)
     if jobs_data:
-        enhanced_data['jobs'] = jobs_data
+        if isinstance(jobs_data, dict):
+            # Check if jobs data indicates login required
+            job_count = jobs_data.get('job_opening_count', '')
+            job_openings = jobs_data.get('job_openings', [])
+            if (isinstance(job_count, str) and 'login required' in job_count.lower()) or \
+               (len(job_openings) == 1 and job_openings[0].get('title', '').lower() == 'login required'):
+                auth_required = True
+            
+            # Add jobs data to enhanced data
+            enhanced_data.update(jobs_data)
     
     # Extract people
     people_data = extract_people(linkedin_url)
     if people_data:
-        enhanced_data['people'] = people_data
+        if isinstance(people_data, dict):
+            # Check if people data indicates login required
+            employee_count = people_data.get('employee_count', '')
+            if isinstance(employee_count, str) and 'login required' in employee_count.lower():
+                auth_required = True
+            
+            # Add people data to enhanced data
+            enhanced_data.update(people_data)
     
+    # Set authentication_required flag based on detected login prompts
+    enhanced_data['authentication_required'] = "true" if auth_required else "false"
+    
+    logger.info(f"Enhanced data extraction complete for {linkedin_url} (Auth required: {auth_required})")
     return enhanced_data
