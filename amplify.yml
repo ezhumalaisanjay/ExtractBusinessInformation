@@ -6,6 +6,8 @@ backend:
         - echo "Setting up Python environment"
         - pyenv global 3.10.16
         - python --version
+        - chmod +x amplify-hooks/pre-deploy.sh
+        - amplify-hooks/pre-deploy.sh
     build:
       commands:
         - pip install --upgrade pip
@@ -23,13 +25,14 @@ backend:
         - echo "Build completed on $(date)"
     postBuild:
       commands:
+        - echo "Running post-deployment checks"
+        - chmod +x amplify-hooks/post-deploy.sh
+        - amplify-hooks/post-deploy.sh
         - echo "Setting up Flask application"
         - python -c "import scripts.cors_handler; print('CORS handler available for deployment')"
         - echo "export FLASK_APP=main.py" >> .env
         - echo "export FLASK_ENV=production" >> .env
         - echo "export PYTHONPATH=/var/app/current" >> .env
-        - echo "Running health check tests"
-        - python -c "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')"
   artifacts:
     baseDirectory: /
     files:
