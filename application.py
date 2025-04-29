@@ -1,14 +1,12 @@
-"""
-AWS Elastic Beanstalk Application Entry Point
 
-This file serves as the entry point for AWS Elastic Beanstalk.
-It imports the Flask application from main.py and makes it available
-as 'application' which is the name that AWS EB looks for.
 """
-
+Application Entry Point
+"""
+from flask import Flask
 from main import app as application
+import os
 
-# This is for AWS Elastic Beanstalk
+# This is required for the application to run properly
 if __name__ == "__main__":
-    # When running locally
-    application.run(host="0.0.0.0", port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    application.run(host="0.0.0.0", port=port)
