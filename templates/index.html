@@ -67,44 +67,47 @@
         <div class="section">
             <h2 class="mb-4 text-center">Get Started</h2>
             <p class="mb-4 text-center">Use our tool to extract detailed business information from LinkedIn company profiles.</p>
-            
+
             <div class="d-grid gap-3">
-                <a href="{{ url_for('main.extract_data') }}" class="btn btn-primary btn-lg">Extract LinkedIn Data</a>
+                <form action="/scrape" method="POST" class="mb-3">
+                    <input type="text" name="url" class="form-control mb-3" placeholder="Enter LinkedIn URL or company website" required>
+                    <button type="submit" class="btn btn-primary btn-lg w-100">Extract LinkedIn Data</button>
+                </form>
                 <a href="{{ url_for('main.batch') }}" class="btn btn-outline-secondary btn-lg">Batch Process URLs</a>
             </div>
         </div>
 
         <div class="section">
             <h2 class="mb-4 text-center">Features</h2>
-            
+
             <div class="feature-item d-flex align-items-center">
                 <div class="me-3">
                     <i data-feather="check-circle" class="check-icon"></i>
                 </div>
                 <div>Company overview and about section</div>
             </div>
-            
+
             <div class="feature-item d-flex align-items-center">
                 <div class="me-3">
                     <i data-feather="check-circle" class="check-icon"></i>
                 </div>
                 <div>Recent posts and their summaries</div>
             </div>
-            
+
             <div class="feature-item d-flex align-items-center">
                 <div class="me-3">
                     <i data-feather="check-circle" class="check-icon"></i>
                 </div>
                 <div>Job openings and opportunities</div>
             </div>
-            
+
             <div class="feature-item d-flex align-items-center">
                 <div class="me-3">
                     <i data-feather="check-circle" class="check-icon"></i>
                 </div>
                 <div>Company people and leadership team</div>
             </div>
-            
+
             <div class="feature-item d-flex align-items-center">
                 <div class="me-3">
                     <i data-feather="check-circle" class="check-icon"></i>
