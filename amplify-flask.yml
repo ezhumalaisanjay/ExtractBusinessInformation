@@ -1,0 +1,59 @@
+version: 0.1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - echo "Installing dependencies"
+        - pip install --upgrade pip
+        - pip install -e .
+    build:
+      commands:
+        - echo "No frontend build step needed"
+    postBuild:
+      commands:
+        - echo "Frontend build completed"
+  artifacts:
+    baseDirectory: /
+    files:
+      - '**/*'
+  cache:
+    paths: []
+  customHeaders:
+    - pattern: '**/*'
+      headers:
+        - key: 'Cache-Control'
+          value: 'max-age=0, no-cache, no-store, must-revalidate'
+        - key: 'Access-Control-Allow-Origin'
+          value: '*'
+        - key: 'Access-Control-Allow-Methods'
+          value: 'GET, POST, OPTIONS'
+        - key: 'Access-Control-Allow-Headers'
+          value: 'Content-Type, Authorization'
+backend:
+  phases:
+    build:
+      commands:
+        - pip install --upgrade pip
+        - pip install -e .
+        - pip install flask gunicorn
+        - mkdir -p /opt/python
+        - mkdir -p /opt/python/current/app
+        - cp -r * /opt/python/current/app/
+        - chmod +x /opt/python/current/app/.platform/hooks/predeploy/01_setup_env.sh
+        - chmod +x /opt/python/current/app/.platform/hooks/postdeploy/01_start_application.sh
+        - echo "Starting Flask application..."
+        - python -c "from main import app; print('Flask app imported successfully')" || echo "Failed to import Flask app"
+  artifacts:
+    baseDirectory: /
+    files:
+      - '**/*'
+  cache:
+    paths: []
+hosting:
+  amplifyhosting:
+    type: 'CUSTOM'
+    properties:
+      server:
+        command: 'gunicorn --bind 0.0.0.0:8080 main:app'
+        port: 8080
+        healthCheckPath: '/'

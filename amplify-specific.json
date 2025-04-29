@@ -1,0 +1,65 @@
+{
+  "name": "LinkedIn Business Intelligence Extractor",
+  "description": "A Python Flask application for extracting LinkedIn business information",
+  "framework": "flask",
+  "environment": {
+    "FLASK_APP": "main.py",
+    "FLASK_ENV": "production",
+    "PYTHONPATH": "/var/app/current"
+  },
+  "buildCommand": "pip install -e .",
+  "startCommand": "gunicorn --bind 0.0.0.0:8080 main:app",
+  "artifacts": {
+    "baseDirectory": "/",
+    "files": [
+      "**/*"
+    ],
+    "excludePatterns": [
+      "**/__pycache__/**",
+      "**/.git/**",
+      "**/node_modules/**"
+    ]
+  },
+  "headers": [
+    {
+      "source": "**/*",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/api/*",
+      "destination": "/api/:splat",
+      "type": "permanent"
+    },
+    {
+      "source": "/batch",
+      "destination": "/",
+      "type": "permanent"
+    },
+    {
+      "source": "/scrape",
+      "destination": "/",
+      "type": "permanent"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/*",
+      "destination": "/"
+    }
+  ]
+}
