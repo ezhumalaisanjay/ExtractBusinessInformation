@@ -13,6 +13,7 @@ import urllib.request
 from urllib.parse import urlparse, urljoin
 import trafilatura
 from bs4 import BeautifulSoup
+import linkedin_auth
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -42,16 +43,38 @@ def extract_posts(linkedin_url):
         posts_url = linkedin_url
     
     try:
-        # Use trafilatura to get HTML content
-        downloaded = trafilatura.fetch_url(posts_url)
+        # Check if we have authentication
+        if linkedin_auth.is_authenticated():
+            logger.info(f"Using authenticated session for: {posts_url}")
+            html_content = linkedin_auth.fetch_url_with_auth(posts_url)
+            if html_content:
+                downloaded = html_content
+                login_redirect = False
+            else:
+                # Authentication didn't work for some reason
+                logger.warning("Authenticated fetch failed, falling back to unauthenticated method")
+                downloaded = trafilatura.fetch_url(posts_url)
+        else:
+            # Use trafilatura to get HTML content without auth
+            downloaded = trafilatura.fetch_url(posts_url)
         
         # Check for login redirect
         login_redirect = False
         if not downloaded or 'uas/login' in str(downloaded).lower():
             login_redirect = True
             logger.warning(f"LinkedIn requires login to view posts. Using main company page instead: {linkedin_url}")
-            # Try using the main company page to at least get some activity info
-            downloaded = trafilatura.fetch_url(linkedin_url)
+            
+            # Try using the main company page with authentication if available
+            if linkedin_auth.is_authenticated():
+                html_content = linkedin_auth.fetch_url_with_auth(linkedin_url)
+                if html_content:
+                    downloaded = html_content
+                else:
+                    downloaded = trafilatura.fetch_url(linkedin_url)
+            else:
+                # Try using the main company page to at least get some activity info
+                downloaded = trafilatura.fetch_url(linkedin_url)
+                
             if not downloaded:
                 logger.error(f"Failed to download company page: {linkedin_url}")
                 # Return a basic structure with explanation
