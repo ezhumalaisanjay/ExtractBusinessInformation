@@ -1,7 +1,0 @@
-{
-    "production": {
-        "app_function": "app.app",  
-        "aws_region": "us-west-2",  
-        "s3_bucket": "zappa-flask-app"  
-    }
-}
