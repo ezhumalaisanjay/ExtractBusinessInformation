@@ -5,15 +5,16 @@ set -e
 
 echo "Running pre-deploy hook..."
 
-# Example: Check if required environment variables are set
+# Set default region if not set
 if [ -z "$AWS_REGION" ]; then
-    echo "Error: AWS_REGION is not set."
-    exit 1
+    echo "Warning: AWS_REGION is not set. Defaulting to 'us-east-1'."
+    AWS_REGION="us-east-1"
 fi
 
+# Set default environment if not set
 if [ -z "$AMPLIFY_ENV" ]; then
-    echo "Error: AMPLIFY_ENV is not set."
-    exit 1
+    echo "Warning: AMPLIFY_ENV is not set. Defaulting to 'main'."
+    AMPLIFY_ENV="main"
 fi
 
 # Example: Perform any pre-deployment tasks
