@@ -4,7 +4,7 @@ setup(
     name='extract-business-info',
     version='0.1.0',
     description='Extract business information from various sources',
-    author='Your Name',
+    author='Sanjay',
     python_requires='>=3.11',
     package_dir={'': 'src'},
     packages=find_packages(where='src'),
