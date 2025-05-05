@@ -1,7 +1,8 @@
 [project]
-name = "repl-nix-workspace"
+name = "extract-business-info"
 version = "0.1.0"
-description = "Add your description here"
+description = "Extract business information from various sources"
+authors = [{ name = "Sanjay" }]
 requires-python = ">=3.11"
 dependencies = [
     "beautifulsoup4>=4.13.4",
@@ -13,3 +14,6 @@ dependencies = [
     "requests>=2.32.3",
     "trafilatura>=2.0.0",
 ]
+
+[tool.setuptools.packages.find]
+where = ["src"]
