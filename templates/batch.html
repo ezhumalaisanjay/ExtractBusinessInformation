@@ -22,6 +22,9 @@
                     <li class="nav-item">
                         <a class="nav-link active" href="/batch">Batch Process</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/linkedin-auth">LinkedIn Auth</a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -74,19 +77,6 @@
                                         Direct Scraping
                                     </label>
                                     <small class="d-block text-muted ms-4">Directly scrape the provided URLs (could be LinkedIn or other websites)</small>
-                                </div>
-                            </div>
-                            
-                            <div class="mb-3 form-check">
-                                <input type="checkbox" class="form-check-input" id="use-auth" name="use_auth" value="true">
-                                <label class="form-check-label" for="use-auth">
-                                    <i data-feather="unlock" class="feather-sm text-success me-1"></i>
-                                    Use authenticated access for LinkedIn (gets more complete data)
-                                </label>
-                                <div class="mt-1">
-                                    <small class="text-muted">
-                                        Using LinkedIn authentication to extract more comprehensive data including posts, jobs, and employee information that's normally restricted.
-                                    </small>
                                 </div>
                             </div>
                             
@@ -217,15 +207,14 @@ Content-Type: application/json
                 submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
                 
                 // Send batch request
-                fetch('{{ url_for('api.batch_process') }}', {
+                fetch('/api/batch', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
                         urls: urls,
-                        mode: mode,
-                        use_auth: document.getElementById('use-auth').checked
+                        mode: mode
                     }),
                 })
                 .then(response => response.json())

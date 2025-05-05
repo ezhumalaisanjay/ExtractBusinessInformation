@@ -1,0 +1,68 @@
+The Netlify deploy errored. The relevant error log line information is:
+
+Line 0: build-image version: c38927cce92092afc316743af1f8656a643fa4a5 (noble)
+Line 1: buildbot version: 766d2c1ac7b7596f18b546cb6bf13962d157b033
+Line 2: Fetching cached dependencies
+Line 3: Failed to fetch cache, continuing with build
+Line 4: Starting to prepare the repo for build
+Line 5: No cached dependencies found. Cloning fresh repo
+Line 6: git clone --filter=blob:none https://github.com/ezhumalaisanjay/web-Scraping
+Line 7: Preparing Git Reference refs/heads/main
+Line 8: Starting to install dependencies
+Line 9: Python version set to 3.13.3
+Line 10: Ruby version set to 2.7.2
+Line 11: [2mmise[0m [34mgo[0m@1.19         install
+Line 12: [2mmise[0m [34mgo[0m@1.19         download go1.19.linux-amd64.tar.gz
+Line 13: Failed during stage 'building site': Build script returned non-zero exit code: 2
+Line 14: [2mmise[0m [34mgo[0m@1.19         checksum go1.19.linux-amd64.tar.gz
+Line 15: [2mmise[0m [34mgo[0m@1.19         extract go1.19.linux-amd64.tar.gz
+Line 16: [2mmise[0m [34mgo[0m@1.19         go version
+Line 17: [2mmise[0m [34mgo[0m@1.19         go version go1.19 linux/amd64
+Line 18: [2mmise[0m [34mgo[0m@1.19       [38;5;10m✓[0m installed
+Line 19: Go version set to 1.19
+Line 20: Using PHP version 8.3
+Line 21: v22.15.0 is already installed.
+Line 22: Now using node v22.15.0 (npm v10.9.2)
+Line 23: Enabling Node.js Corepack
+Line 49: [36m[1m​[22m[39m
+Line 50: [36m[1m❯ Context[22m[39m
+Line 51:   production
+Line 52: [96m[1m​[22m[39m
+Line 53: [96m[1mBuild command from Netlify app                                [22m[39m
+Line 54: [96m[1m────────────────────────────────────────────────────────────────[22m[39m
+Line 55: ​
+Line 56: [36m$ expo build:web[39m
+Line 57: bash: line 1: expo: command not found
+Line 58: [91m[1m​[22m[39m
+Line 59: [91m[1m"build.command" failed                                        [22m[39m
+Line 60: [91m[1m────────────────────────────────────────────────────────────────[22m[39m
+Line 61: ​
+Line 62:   [31m[1mError message[22m[39m
+Line 63:   Command failed with exit code 127: expo build:web
+Line 64: ​
+Line 65:   [31m[1mError location[22m[39m
+Line 66:   In Build command from Netlify app:
+Line 67:   expo build:web
+Line 68: ​
+Line 69:   [31m[1mResolved config[22m[39m
+Line 70:   build:
+Line 71:     command: expo build:web
+Line 72:     commandOrigin: ui
+Line 73:     publish: /opt/build/repo/web-build
+Line 74:     publishOrigin: ui
+Line 75: Build failed due to a user error: Build script returned non-zero exit code: 2
+Line 76: Failing build: Failed to build site
+Line 77: Finished processing build request in 15.168s
+
+Netlify has analyzed the error and provided the following guidance:
+
+**Diagnosis:**
+Based on the error logs, the build failure is caused by the command `expo build:web` not being found during the build process.
+
+**Solution:**
+1. The error suggests that the command `expo` is not available in the build environment, causing the "command not found" issue.
+2. To resolve this, ensure that the necessary dependencies for Expo are installed in the project.
+3. Verify that Expo is listed as a dependency in the `package.json` file of the repository or ensure that the required dependencies are committed to the repository.
+4. If Expo is not listed, add it as a dependency by running `npm install expo-cli` in the project's directory and then deploy the updated code to the repository.
+
+By adding Expo as a dependency in the project and ensuring it is available in the build environment, the `expo build:web` command should work as expected during the build process.

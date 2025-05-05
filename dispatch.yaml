@@ -1,4 +1,0 @@
-dispatch:
-  # Send all traffic to the default service
-  - url: "*/*"
-    service: default
